@@ -3,7 +3,7 @@ name: "\U0001F41E[Bug] 버그 리포트 템플릿"
 about: Bug 발생 시 작성해주세요
 title: "\U0001F41E[Bug] 버그 수정 템플릿"
 labels: ''
-assignees: bucky1005
+assignees: ''
 
 ---
 
