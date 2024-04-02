@@ -28,7 +28,7 @@ jobs:
           fi
       - name: Create ticket
         if: github.event.action == 'opened'
-        uses: tomhjp/gh-action-jira-create@v0.2.1
+        uses: atlassian/gajira-create@v3
         with:
           project: ITTY
           issuetype: "GH Issue"
