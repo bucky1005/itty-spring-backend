@@ -30,7 +30,7 @@ jobs:
         if: github.event.action == 'opened'
         uses: tomhjp/gh-action-jira-create@3ed1789cad3521292e591a7cfa703215ec1348bf # v0.2.1
         with:
-          project: VAULT
+          project: ITTY
           issuetype: "GH Issue"
           summary: "${{ github.event.repository.name }} [${{ steps.preprocess.outputs.type }} #${{ github.event.issue.number || github.event.pull_request.number }}]: ${{ github.event.issue.title || github.event.pull_request.title }}"
           description: "${{ github.event.issue.body || github.event.pull_request.body }}\n\n_Created from GitHub Action for ${{ github.event.issue.html_url || github.event.pull_request.html_url }} from ${{ github.actor }}_"
@@ -43,7 +43,7 @@ jobs:
         uses: tomhjp/gh-action-jira-search@04700b457f317c3e341ce90da5a3ff4ce058f2fa # v0.2.2
         with:
           # cf[10089] is Issue Link custom field
-          jql: 'project = "VAULT" and cf[10089]="${{ github.event.issue.html_url || github.event.pull_request.html_url }}"'
+          jql: 'project = "ITTY" and cf[10089]="${{ github.event.issue.html_url || github.event.pull_request.html_url }}"'
       - name: Sync comment
         if: github.event.action == 'created' && steps.search.outputs.issue
         uses: tomhjp/gh-action-jira-comment@6eb6b9ead70221916b6badd118c24535ed220bd9 # v0.2.0
