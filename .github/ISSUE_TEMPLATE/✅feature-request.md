@@ -1,9 +1,9 @@
 ---
 name: "✅Feature request"
-about: 기능 추가 시 작성해주세요
+about: 기능 추가 시 작성, 제목 앞에 이모지 추가 해주세요
 title: ''
 labels: ''
-assignees: ''
+assignees: bucky1005
 
 ---
 
