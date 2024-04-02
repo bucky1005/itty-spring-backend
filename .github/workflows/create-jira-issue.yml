@@ -31,7 +31,7 @@ jobs:
         uses: atlassian/gajira-create@v3
         with:
           project: ITTY
-          issuetype: "GH Issue"
+          issuetype: "Task"
           summary: "${{ github.event.repository.name }} [${{ steps.preprocess.outputs.type }} #${{ github.event.issue.number || github.event.pull_request.number }}]: ${{ github.event.issue.title || github.event.pull_request.title }}"
           description: "${{ github.event.issue.body || github.event.pull_request.body }}\n\n_Created from GitHub Action for ${{ github.event.issue.html_url || github.event.pull_request.html_url }} from ${{ github.actor }}_"
           # customfield_10089 is Issue Link custom field
