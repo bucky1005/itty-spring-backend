@@ -1,9 +1,9 @@
 ---
 name: "\U0001F433[Feature] 새로운 기능 추가 템플릿"
 about: 기능 추가 시 작성, 제목 앞에 이모지 추가 해주세요
-title: ''
+title: "\U0001F433[Feature] 새로운 기능 추가 템플릿"
 labels: ''
-assignees: bucky1005
+assignees: ''
 
 ---
 
