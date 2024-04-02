@@ -1,6 +1,6 @@
 ---
 name: "\U0001F3A8[Rename] 파일명 or 폴더명 변경 템플릿"
-about: 프로젝트 내 파일명이나 패키지(폴더)명 변경
+about: 프로젝트 내 파일명이나 패키지(폴더)명 변경 시 사용해주세요
 title: "\U0001F3A8[Rename] 파일명 or 폴더명 변경 템플릿"
 labels: ''
 assignees: ''
