@@ -9,12 +9,12 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
+import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "article_tb")
-@NoArgsConstructor
-@AllArgsConstructor
+@Data
 public class ArticleEntity {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
