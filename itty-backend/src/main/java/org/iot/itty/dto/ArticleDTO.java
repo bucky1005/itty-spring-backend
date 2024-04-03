@@ -11,7 +11,7 @@ public class ArticleDTO {
 	private String articleContent;
 	private Date articleCreatedDate;
 	private Date articleLastUpdatedDate;
-	private int userCode;
+	private int userCodeFk;
 	private int articleCategory;
 	private int articleViewCount;
 }
