@@ -1,4 +1,11 @@
 package org.iot.itty.article.repository;
 
-public interface ArticleRepository {
+import java.util.List;
+import java.util.Map;
+
+import org.iot.itty.article.aggregate.ArticleEntity;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+public interface ArticleRepository extends JpaRepository<ArticleEntity, Integer> {
+	List<ArticleEntity> findAllByArticleCategory(int articleCategory);
 }
