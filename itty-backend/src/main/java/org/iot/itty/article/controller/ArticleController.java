@@ -2,19 +2,22 @@ package org.iot.itty.article.controller;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.iot.itty.article.service.ArticleService;
 import org.iot.itty.article.service.ReplyService;
+import org.iot.itty.article.vo.RequestRegistFreeBoardArticle;
 import org.iot.itty.article.vo.ResponseArticle;
+import org.iot.itty.article.vo.ResponseRegistFreeBoardArticle;
 import org.iot.itty.dto.ArticleDTO;
+import org.iot.itty.dto.ReplyDTO;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -50,6 +53,18 @@ public class ArticleController {
 		}
 
 		return ResponseEntity.status(HttpStatus.OK).body(responseArticleList);
+	}
+
+	@PostMapping("/article/category/2/regist")
+	public ResponseEntity<ResponseRegistFreeBoardArticle> registFreeBoardArticle(@RequestBody RequestRegistFreeBoardArticle requestRegistFreeBoardArticle) {
+		mapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
+		ArticleDTO requestArticleDTO = mapper.map(requestRegistFreeBoardArticle, ArticleDTO.class);
+		ArticleDTO responseArticleDTO = articleService.registFreeBoardArticle(requestArticleDTO);
+
+		List<ReplyDTO> replyDTOList = new ArrayList<>();
+		responseArticleDTO.setReplyDTOList(replyDTOList);
+
+		return ResponseEntity.status(HttpStatus.CREATED).body(mapper.map(responseArticleDTO, ResponseRegistFreeBoardArticle.class));
 	}
 
 }
