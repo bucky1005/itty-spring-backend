@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.iot.itty.article.service.ArticleService;
+import org.iot.itty.article.service.ReplyService;
 import org.iot.itty.article.vo.ResponseArticle;
 import org.iot.itty.dto.ArticleDTO;
 import org.modelmapper.ModelMapper;
@@ -22,17 +23,20 @@ import org.springframework.web.bind.annotation.RestController;
 public class ArticleController {
 
 	private final ArticleService articleService;
+	private final ReplyService replyService;
 	private final ModelMapper mapper;
 
 	@Autowired
-	public ArticleController(ArticleService articleService, ModelMapper mapper) {
+	public ArticleController(ArticleService articleService, ReplyService replyService, ModelMapper mapper) {
 		this.articleService = articleService;
+		this.replyService = replyService;
 		this.mapper = mapper;
 	}
 
-	@GetMapping("/article/category/{articleCategory}")
-	public ResponseEntity<List<ResponseArticle>> selectAllArticleFromFreeBoard(@PathVariable("articleCategory") int articleCategory) {
-		List<ArticleDTO> articleDTOList = articleService.selectAllArticleFromFreeBoard(articleCategory);
+	/* 자유게시판 전체조회 */
+	@GetMapping("/article/category/2")
+	public ResponseEntity<List<ResponseArticle>> selectAllArticleFromFreeBoard() {
+		List<ArticleDTO> articleDTOList = articleService.selectAllArticleFromFreeBoard();
 
 		mapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
 		List<ResponseArticle> responseArticleList = new ArrayList<>();
@@ -40,10 +44,12 @@ public class ArticleController {
 		if (articleDTOList != null) {
 			responseArticleList = articleDTOList
 				.stream()
+				.peek(articleDTO -> articleDTO.setReplyDTOList(replyService.selectReplyByArticleCodeFk(articleDTO.getArticleCodePk())))
 				.map(ArticleDTO -> mapper.map(ArticleDTO, ResponseArticle.class))
 				.toList();
 		}
 
 		return ResponseEntity.status(HttpStatus.OK).body(responseArticleList);
 	}
+
 }

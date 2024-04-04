@@ -22,7 +22,8 @@ public class ArticleServiceImpl implements ArticleService{
 	}
 
 	@Override
-	public List<ArticleDTO> selectAllArticleFromFreeBoard(int articleCategory) {
+	public List<ArticleDTO> selectAllArticleFromFreeBoard() {
+		int articleCategory = 2;
 		List<ArticleEntity> articleEntityList = articleRepository.findAllByArticleCategory(articleCategory);
 
 		return articleEntityList

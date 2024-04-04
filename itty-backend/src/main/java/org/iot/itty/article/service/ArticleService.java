@@ -5,5 +5,5 @@ import java.util.List;
 import org.iot.itty.dto.ArticleDTO;
 
 public interface ArticleService {
-	List<ArticleDTO> selectAllArticleFromFreeBoard(int articleCategory);
+	List<ArticleDTO> selectAllArticleFromFreeBoard();
 }
