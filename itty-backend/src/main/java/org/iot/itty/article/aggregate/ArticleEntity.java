@@ -8,13 +8,17 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "article_tb")
-@Data
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Getter
 public class ArticleEntity {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -41,4 +45,26 @@ public class ArticleEntity {
 
 	@Column(name = "article_view_count")
 	private int articleViewCount;
+
+	@Builder
+	public ArticleEntity(
+		Integer articleCodePk,
+		String articleTitle,
+		String articleContent,
+		Date articleCreatedDate,
+		Date articleLastUpdatedDate,
+		int userCodeFk,
+		int articleCategory,
+		int articleViewCount
+	)
+	{
+		this.articleCodePk = articleCodePk;
+		this.articleTitle = articleTitle;
+		this.articleContent = articleContent;
+		this.articleCreatedDate = articleCreatedDate;
+		this.articleLastUpdatedDate = articleLastUpdatedDate;
+		this.userCodeFk = userCodeFk;
+		this.articleCategory = articleCategory;
+		this.articleViewCount = articleViewCount;
+	}
 }
