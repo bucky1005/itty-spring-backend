@@ -30,10 +30,10 @@ public class ReplyController {
 	}
 
 	@GetMapping("/reply/article/{articleCodeFk}")
-	public ResponseEntity<List<ResponseSelectReplyByArticleCodeFk>> selectReplyByArticleCodeFk(@PathVariable("article_code_fk") int articleCodeFk) {
+	public ResponseEntity<List<ResponseSelectReplyByArticleCodeFk>> selectReplyByArticleCodeFk(@PathVariable("articleCodeFk") int articleCodeFk) {
 		List<ReplyDTO> replyDTOList = replyService.selectReplyByArticleCodeFk(articleCodeFk);
 
-		mapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
+		// mapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
 		List<ResponseSelectReplyByArticleCodeFk> responseSelectReplyByArticleCodeFkList = new ArrayList<>();
 
 		if (replyDTOList != null) {
