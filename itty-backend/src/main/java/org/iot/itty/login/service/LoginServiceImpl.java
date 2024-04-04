@@ -12,7 +12,6 @@ import lombok.extern.slf4j.Slf4j;
 @Service
 @Slf4j
 public class LoginServiceImpl implements LoginService {
-
 	public final UserRepository userRepository;
 	public final BCryptPasswordEncoder bCryptPasswordEncoder;
 
@@ -26,6 +25,7 @@ public class LoginServiceImpl implements LoginService {
 	public int registUser(UserDTO userDTO) {
 		String userEmail = userDTO.getUserEmail();
 		String userPassword = userDTO.getUserPassword();
+		String userName = userDTO.getUserName();
 		String userPhoneNumber = userDTO.getUserPhoneNumber();
 		String userNickname = userDTO.getUserNickname();
 
@@ -40,6 +40,7 @@ public class LoginServiceImpl implements LoginService {
 
 		data.setUserEmail(userEmail);
 		data.setUserPassword(bCryptPasswordEncoder.encode(userPassword));
+		data.setUserName(userName);
 		data.setUserPhoneNumber(userPhoneNumber);
 		data.setUserNickname(userNickname);
 		data.setUserRole("ROLE_USER");
