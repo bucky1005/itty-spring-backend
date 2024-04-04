@@ -2,6 +2,7 @@ package org.iot.itty.user.controller;
 
 import org.iot.itty.dto.UserDTO;
 import org.iot.itty.user.service.UserService;
+import org.iot.itty.user.vo.RequestUserModify;
 import org.iot.itty.user.vo.ResponseUserModify;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
@@ -26,13 +27,19 @@ public class UserController {
 	}
 
 	@PostMapping("/user/modify")
-	public ResponseEntity<ResponseUserModify> modifyUser(@RequestBody ResponseUserModify modifyUserData){
+	public ResponseEntity<ResponseUserModify> modifyUser(@RequestBody RequestUserModify modifyUserData){
 
 		modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
 		UserDTO userDTO = modelMapper.map(modifyUserData, UserDTO.class);
 		UserDTO user = userService.modifyUser(userDTO);
 
 		ResponseUserModify responseUser = new ResponseUserModify();
+
+		if(user == null) {
+			responseUser.setResultCode(400); // 예시 코드, 실제 애플리케이션에 맞게 조정해야 함
+			responseUser.setMessage("사용자 정보를 찾을 수 없습니다.");
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseUser);
+		}
 
 		if(user.getUserCodePk() == userDTO.getUserCodePk()){
 			if(user.getUserNickname().equals(userDTO.getUserNickname()) && user.getUserIntroduction().equals(userDTO.getUserIntroduction())) {

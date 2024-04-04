@@ -1,1 +1,15 @@
-spring.application.name=itty-backend
+server:
+  port: 8888
+
+spring:
+  datasource:
+    driver-class-name: org.mariadb.jdbc.Driver
+    url: jdbc:mariadb://localhost:3306/itty
+    username: swcamp
+    password: swcamp
+  jpa:
+    show-sql: true
+    database: mysql
+    properties:
+      hibernate:
+        '[format_sql]': true
