@@ -1,6 +1,6 @@
 package org.iot.itty.user.vo;
 
-public class ResponseModifyUser {
+public class ResponseUserModify {
 	private int resultCode;
 	private String message;
 }
