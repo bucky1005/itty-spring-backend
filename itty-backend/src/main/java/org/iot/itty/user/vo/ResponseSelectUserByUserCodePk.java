@@ -1,4 +1,4 @@
-package org.iot.itty.dto;
+package org.iot.itty.user.vo;
 
 import java.util.List;
 
@@ -8,7 +8,7 @@ import org.iot.itty.article.vo.ResponseSelectAllReplyByUserCodeFk;
 import lombok.Data;
 
 @Data
-public class UserDTO {
+public class ResponseSelectUserByUserCodePk {
 	private int userCodePk;
 	private String userEmail;
 	private String userName;
