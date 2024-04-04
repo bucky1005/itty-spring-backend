@@ -29,6 +29,13 @@ dependencies {
     annotationProcessor 'org.projectlombok:lombok'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     implementation 'org.modelmapper:modelmapper:3.2.0'
+
+    /* dependency 추가 */
+    // spring security
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+    implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity6'
+    testImplementation 'org.springframework.security:spring-security-test'
+
 }
 
 tasks.named('test') {
