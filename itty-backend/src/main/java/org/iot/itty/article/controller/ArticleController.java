@@ -11,6 +11,7 @@ import org.iot.itty.article.vo.ResponseArticle;
 import org.iot.itty.article.vo.ResponseDeleteFreeBoardArticle;
 import org.iot.itty.article.vo.ResponseModifyFreeBoardArticle;
 import org.iot.itty.article.vo.ResponseRegistFreeBoardArticle;
+import org.iot.itty.article.vo.ResponseSelectAllArticleByUserCodeFk;
 import org.iot.itty.dto.ArticleDTO;
 import org.iot.itty.dto.ReplyDTO;
 import org.modelmapper.ModelMapper;
@@ -61,6 +62,7 @@ public class ArticleController {
 		return ResponseEntity.status(HttpStatus.OK).body(responseArticleList);
 	}
 
+	/* 게시글코드(article_code_pk) 로 자유게시판 게시글 한개 조회 */
 	@GetMapping("/article/freeboard/{articleCodePk}")
 	public ResponseEntity<ResponseArticle> selectFreeBoardArticleByArticleCodePk(@PathVariable("articleCodePk") int articleCodePk) {
 		ArticleDTO articleDTO = articleService.selectFreeBoardArticleByArticleCodePk(articleCodePk);
@@ -71,6 +73,23 @@ public class ArticleController {
 
 	}
 
+	/* 회원코드(user_code_fk) 로 회원별 작성된 게시글 조회 */
+	@GetMapping("/user/{userCodeFk}/articles")
+	public ResponseEntity<List<ResponseSelectAllArticleByUserCodeFk>> selectAllArticleByUserCodeFk(@PathVariable("userCodeFk") int userCodeFk) {
+		List<ArticleDTO> articleDTOList = articleService.selectAllArticleByUserCodeFk(userCodeFk);
+		List<ResponseSelectAllArticleByUserCodeFk> responseSelectAllArticleByUserCodeFkList = new ArrayList<>();
+
+		if (articleDTOList != null) {
+			responseSelectAllArticleByUserCodeFkList = articleDTOList
+				.stream()
+				.peek(articleDTO -> articleDTO.setReplyDTOList(replyService.selectReplyByArticleCodeFk(articleDTO.getArticleCodePk())))
+				.map(ArticleDTO -> mapper.map(ArticleDTO, ResponseSelectAllArticleByUserCodeFk.class))
+				.toList();
+		}
+		return ResponseEntity.status(HttpStatus.OK).body(responseSelectAllArticleByUserCodeFkList);
+	}
+
+	/* 자유게시판 게시글 등록 */
 	@PostMapping("/article/freeboard/regist")
 	public ResponseEntity<ResponseRegistFreeBoardArticle> registFreeBoardArticle(@RequestBody RequestRegistFreeBoardArticle requestRegistFreeBoardArticle) {
 		mapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
@@ -84,6 +103,7 @@ public class ArticleController {
 			.body(mapper.map(responseArticleDTO, ResponseRegistFreeBoardArticle.class));
 	}
 
+	/* 자유게시판 게시글 수정 */
 	@PutMapping("/article/freeboard/{articleCodePk}/modify")
 	public ResponseEntity<ResponseModifyFreeBoardArticle> modifyFreeBoardArticle(
 		@RequestBody RequestModifyFreeBoardArticle requestModifyFreeBoardArticle,
@@ -101,6 +121,7 @@ public class ArticleController {
 			.body(mapper.map(responseArticleDTO, ResponseModifyFreeBoardArticle.class));
 	}
 
+	/* 자유게시판 게시글 삭제 */
 	@DeleteMapping("/article/freeboard/{articleCodePk}/delete")
 	public ResponseEntity<ResponseDeleteFreeBoardArticle> deleteFreeBoardArticle(
 		@PathVariable("articleCodePk") int articleCodePk

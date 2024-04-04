@@ -44,6 +44,16 @@ public class ArticleServiceImpl implements ArticleService{
 		return mapper.map(articleEntity, ArticleDTO.class);
 	}
 
+	@Override
+	public List<ArticleDTO> selectAllArticleByUserCodeFk(int userCodeFk) {
+		List<ArticleEntity> articleEntityList = articleRepository.findAllByUserCodeFk(userCodeFk);
+
+		return articleEntityList
+			.stream()
+			.map(ArticleEntity -> mapper.map(ArticleEntity, ArticleDTO.class))
+			.toList();
+	}
+
 	@Transactional
 	@Override
 	public ArticleDTO registFreeBoardArticle(ArticleDTO requestArticleDTO) {
