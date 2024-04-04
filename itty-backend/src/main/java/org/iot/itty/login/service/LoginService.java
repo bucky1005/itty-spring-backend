@@ -1,8 +1,9 @@
 package org.iot.itty.login.service;
 
-import org.iot.itty.login.vo.ResponseLogin;
+import org.iot.itty.dto.UserDTO;
 
 public interface LoginService {
 
-	void registProcess(ResponseLogin responseLogin);
+	int registProcess(UserDTO userDTO);
+
 }

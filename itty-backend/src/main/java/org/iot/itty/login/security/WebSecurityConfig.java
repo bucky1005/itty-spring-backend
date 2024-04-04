@@ -14,12 +14,6 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 public class WebSecurityConfig {
 
 	@Bean
-	public BCryptPasswordEncoder bCryptPasswordEncoder() {
-
-		return new BCryptPasswordEncoder();
-	}
-
-	@Bean
 	public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 		// csrf disable
 		/* jwt 토큰을 사용하면 세션을 stateless 상태로 관리하기 때문에 csrf를 disable 상태로 설정한다. */
