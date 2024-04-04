@@ -36,12 +36,12 @@ public class LoginController {
 	}
 
 	@PostMapping("/regist")
-	public ResponseEntity<ResponseRegist> registProcess(@RequestBody RequestRegist requestRegist) {
+	public ResponseEntity<ResponseRegist> registUser(@RequestBody RequestRegist requestRegist) {
 
 		modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
 		UserDTO userDTO = modelMapper.map(requestRegist, UserDTO.class);
 
-		int userCode = loginService.registProcess(userDTO);
+		int userCode = loginService.registUser(userDTO);
 
 		ResponseRegist responseRegist = new ResponseRegist();
 		responseRegist.setUserCodePk(userCode);
