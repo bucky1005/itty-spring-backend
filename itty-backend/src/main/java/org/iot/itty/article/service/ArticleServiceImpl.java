@@ -10,6 +10,7 @@ import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class ArticleServiceImpl implements ArticleService{
@@ -27,6 +28,7 @@ public class ArticleServiceImpl implements ArticleService{
 	public List<ArticleDTO> selectAllArticleFromFreeBoard() {
 		int articleCategory = 2;
 		List<ArticleEntity> articleEntityList = articleRepository.findAllByArticleCategory(articleCategory);
+		mapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
 
 		return articleEntityList
 			.stream()
@@ -34,6 +36,15 @@ public class ArticleServiceImpl implements ArticleService{
 			.toList();
 	}
 
+	@Override
+	public ArticleDTO selectFreeBoardArticleByArticleCodePk(int articleCodePk) {
+		ArticleEntity articleEntity = articleRepository.findById(articleCodePk).get();
+		mapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
+
+		return mapper.map(articleEntity, ArticleDTO.class);
+	}
+
+	@Transactional
 	@Override
 	public ArticleDTO registFreeBoardArticle(ArticleDTO requestArticleDTO) {
 		ArticleEntity articleEntity = ArticleEntity.builder()
@@ -47,5 +58,37 @@ public class ArticleServiceImpl implements ArticleService{
 			.build();
 		mapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
 		return mapper.map(articleRepository.save(articleEntity), ArticleDTO.class);
+	}
+
+	@Transactional
+	@Override
+	public ArticleDTO modifyFreeBoardArticle(ArticleDTO requestArticleDTO, int articleCodePk) {
+		ArticleEntity foundArticleEntity = articleRepository.findById(articleCodePk).get();
+		ArticleEntity articleEntity = ArticleEntity.builder()
+			.articleCodePk(articleCodePk)
+			.articleTitle(requestArticleDTO.getArticleTitle())
+			.articleContent(requestArticleDTO.getArticleContent())
+			.articleCreatedDate(foundArticleEntity.getArticleCreatedDate())
+			.articleLastUpdatedDate(new Date())
+			.articleCategory(foundArticleEntity.getArticleCategory())
+			.articleViewCount(foundArticleEntity.getArticleViewCount())
+			.userCodeFk(foundArticleEntity.getUserCodeFk())
+			.build();
+		mapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
+
+		return mapper.map(articleRepository.save(articleEntity), ArticleDTO.class);
+	}
+
+	@Transactional
+	@Override
+	public String deleteFreeBoardArticle(int articleCodePk) {
+		String message;
+		try {
+			articleRepository.deleteById(articleCodePk);
+			message = "Deleted article #" + articleCodePk + " successfully";
+		} catch (Exception e) {
+			message = e.getMessage();
+		}
+		return message;
 	}
 }
