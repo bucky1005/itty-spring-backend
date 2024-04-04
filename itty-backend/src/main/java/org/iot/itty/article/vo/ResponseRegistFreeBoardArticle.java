@@ -1,12 +1,14 @@
-package org.iot.itty.dto;
+package org.iot.itty.article.vo;
 
 import java.util.Date;
 import java.util.List;
 
+import org.iot.itty.dto.ReplyDTO;
+
 import lombok.Data;
 
 @Data
-public class ArticleDTO {
+public class ResponseRegistFreeBoardArticle {
 	private int articleCodePk;
 	private String articleTitle;
 	private String articleContent;
