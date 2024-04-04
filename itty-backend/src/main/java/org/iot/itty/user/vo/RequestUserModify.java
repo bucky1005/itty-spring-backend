@@ -3,7 +3,7 @@ package org.iot.itty.user.vo;
 import lombok.Data;
 
 @Data
-public class RequestUser {
+public class RequestUserModify {
 
 	private int userCodePk;
 	private String userNickname;
