@@ -1,11 +1,13 @@
-package org.iot.itty.dto;
+package org.iot.itty.article.vo;
 
 import java.util.Date;
+
+import org.iot.itty.dto.UserDTO;
 
 import lombok.Data;
 
 @Data
-public class ReplyDTO {
+public class ResponseSelectReplyByArticleCodeFk {
 	private int replyCodePk;
 	private String replyContent;
 	private int userCodeFk;
