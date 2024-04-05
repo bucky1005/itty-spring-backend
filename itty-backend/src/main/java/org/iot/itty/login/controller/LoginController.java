@@ -57,9 +57,21 @@ public class LoginController {
 	@PutMapping("/user/withdrawal")
 	public ResponseEntity<ResponseWithdrawal> userWithdrawal(@RequestBody RequestWithdrawal requestWithdrawal) {
 
+		modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
+		UserDTO userDTO = modelMapper.map(requestWithdrawal, UserDTO.class);
+
 		ResponseWithdrawal responseWithdrawal = new ResponseWithdrawal();
+		responseWithdrawal.setUserEmail(requestWithdrawal.getUserEmail());
 
+		boolean isWithdrawalSuccessful = loginService.userWithdrawal(userDTO);
 
-		return ResponseEntity.status(HttpStatus.OK).body(responseWithdrawal);
+		if (isWithdrawalSuccessful) {
+			responseWithdrawal.setMessage("회원 탈퇴 완료");
+
+			return ResponseEntity.status(HttpStatus.OK).body(responseWithdrawal);
+		} else {
+			responseWithdrawal.setMessage("해당 유저는 존재하지 않습니다.");
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(responseWithdrawal);
+		}
 	}
 }
