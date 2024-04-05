@@ -76,4 +76,26 @@ class ArticleControllerTests {
 			.andExpect(jsonPath("$[0].articleTitle", is("Title 1")))
 			.andExpect(jsonPath("$[1].articleTitle", is("Title 2")));
 	}
+
+	@Test
+	@DisplayName("자유게시글 하나 조회 테스트")
+	void selectFreeBoardArticleByArticleCodePk() throws Exception {
+
+		int articleCodeFk = 1;
+		ArticleDTO articleDTO = new ArticleDTO();
+		articleDTO.setArticleTitle("Title 2");
+		ResponseArticle responseArticle = new ResponseArticle();
+		responseArticle.setArticleTitle("Title 2");
+
+		given(articleService.selectFreeBoardArticleByArticleCodePk(articleCodeFk)).willReturn(articleDTO);
+		given(modelMapper.map(any(ArticleDTO.class), eq(ResponseArticle.class))).willReturn(responseArticle);
+
+		mockMvc.perform(get("/article/freeboard/{articleCodePk}", articleCodeFk)
+				.contentType(MediaType.APPLICATION_JSON))
+			.andExpect(status().isOk())
+			.andExpect(jsonPath("$.articleTitle", is("Title 2")));
+
+		verify(articleService, times(1)).selectFreeBoardArticleByArticleCodePk(articleCodeFk);
+
+	}
 }
