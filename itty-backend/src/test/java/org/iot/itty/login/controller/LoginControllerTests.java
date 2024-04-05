@@ -8,27 +8,31 @@ import org.iot.itty.login.service.LoginServiceImpl;
 import org.iot.itty.user.repository.UserRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.web.servlet.MockMvc;
 
-@ExtendWith(MockitoExtension.class)
 @SpringBootTest
 @AutoConfigureMockMvc
 public class LoginControllerTests {
-	@Mock
+
+	@Autowired
+	private MockMvc mockMvc;
+
+	@MockBean
 	private UserRepository userRepository;
 
-	@InjectMocks
+	@MockBean
 	private LoginServiceImpl loginServiceImpl;
 
 	@Test
 	@DisplayName("회원 가입 성공 테스트")
 	public void testRegistUser_Success() {
-		// Given
+		// 준비
 		UserDTO userDTO = new UserDTO();
 		userDTO.setUserEmail("test@example.com");
 		userDTO.setUserPassword("password");
