@@ -9,12 +9,6 @@ import lombok.Data;
 
 @Data
 public class ResponseRegistFreeBoardArticle {
-	private int articleCodePk;
-	private String articleTitle;
-	private String articleContent;
-	private Date articleCreatedDate;
-	private Date articleLastUpdatedDate;
-	private int userCodeFk;
-	private int articleCategory;
-	private int articleViewCount;
+	private int resultCode;
+	private String message;
 }

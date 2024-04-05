@@ -66,8 +66,10 @@ public class ArticleServiceImpl implements ArticleService{
 			.articleViewCount(0)	// 게시글 등록 시 조회수는 0
 			.userCodeFk(requestArticleDTO.getUserCodeFk())
 			.build();
-		mapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
-		return mapper.map(articleRepository.save(articleEntity), ArticleDTO.class);
+		// mapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
+		articleEntity = articleRepository.save(articleEntity);
+
+		return mapper.map(articleEntity, ArticleDTO.class);
 	}
 
 	@Transactional

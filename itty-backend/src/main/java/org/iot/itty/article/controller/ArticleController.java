@@ -110,10 +110,26 @@ public class ArticleController {
 		// mapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
 		ArticleDTO requestArticleDTO = mapper.map(requestRegistFreeBoardArticle, ArticleDTO.class);
 		ArticleDTO responseArticleDTO = articleService.registFreeBoardArticle(requestArticleDTO);
+		ResponseRegistFreeBoardArticle responseRegistFreeBoardArticle = new ResponseRegistFreeBoardArticle();
+
+		// if(responseArticleDTO.getArticleTitle().equals(requestArticleDTO.getArticleTitle()) && responseArticleDTO.getArticleContent().equals(requestArticleDTO.getArticleContent())){
+		// 	responseRegistFreeBoardArticle.setResultCode(201);
+		// 	responseRegistFreeBoardArticle.setMessage("게시글 등록 성공");
+		// } else{
+		// 	responseRegistFreeBoardArticle.setResultCode(501);
+		// 	responseRegistFreeBoardArticle.setMessage("게시글 등록 실패");
+		// }
+		if (responseArticleDTO == null) {
+			// responseArticleDTO가 null인 경우 적절한 처리를 수행 (예: 에러 응답 반환)
+			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+
+		responseRegistFreeBoardArticle.setResultCode(201);
+		responseRegistFreeBoardArticle.setMessage("게시글 등록 성공");
 
 		return ResponseEntity
 			.status(HttpStatus.CREATED)
-			.body(mapper.map(responseArticleDTO, ResponseRegistFreeBoardArticle.class));
+			.body(responseRegistFreeBoardArticle);
 	}
 
 	/* 자유게시판 게시글 수정 */

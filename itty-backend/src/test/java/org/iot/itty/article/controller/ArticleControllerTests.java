@@ -9,7 +9,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import java.util.List;
 
 import org.iot.itty.article.service.ArticleService;
+import org.iot.itty.article.vo.RequestRegistFreeBoardArticle;
 import org.iot.itty.article.vo.ResponseArticle;
+import org.iot.itty.article.vo.ResponseRegistFreeBoardArticle;
 import org.iot.itty.article.vo.ResponseSelectAllArticleByUserCodeFk;
 import org.iot.itty.dto.ArticleDTO;
 import org.junit.jupiter.api.DisplayName;
@@ -21,6 +23,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -127,5 +131,33 @@ class ArticleControllerTests {
 			.andExpect(status().isOk())
 			.andExpect(jsonPath("$[0].articleTitle", is("Title 2")))
 			.andExpect(jsonPath("$[1].articleTitle", is("Title 2")));
+	}
+
+	@Test
+	@DisplayName("자유게시판 게시글 등록")
+	void registFreeBoardArticle() throws Exception {
+
+		// given
+		RequestRegistFreeBoardArticle requestRegistFreeBoardArticle = new RequestRegistFreeBoardArticle();
+		requestRegistFreeBoardArticle.setUserCodeFk(3);
+		requestRegistFreeBoardArticle.setArticleTitle("Test");
+		requestRegistFreeBoardArticle.setArticleContent("Test");
+
+		ArticleDTO articleDTO = new ArticleDTO();
+		// articleDTO.setUserCodeFk(requestRegistFreeBoardArticle.getUserCodeFk());
+		articleDTO.setArticleTitle(requestRegistFreeBoardArticle.getArticleTitle());
+		articleDTO.setArticleContent(requestRegistFreeBoardArticle.getArticleContent());
+
+		given(articleService.registFreeBoardArticle(any(ArticleDTO.class))).willReturn(articleDTO);
+
+		// ObjectMapper objectMapper = new ObjectMapper();
+		// String jsonContent = objectMapper.writeValueAsString(requestRegistFreeBoardArticle);
+
+		mockMvc.perform(post("/article/freeboard/regist")
+			.contentType(MediaType.APPLICATION_JSON)
+			.content(new ObjectMapper().writeValueAsString(requestRegistFreeBoardArticle)))
+			.andExpect(status().isCreated())
+			.andExpect(jsonPath("$.resultCode").value(201))
+			.andExpect(jsonPath("$.message").value("게시글 등록 성공"));
 	}
 }
