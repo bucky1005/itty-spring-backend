@@ -107,11 +107,9 @@ public class ArticleController {
 	/* 자유게시판 게시글 등록 */
 	@PostMapping("/article/freeboard/regist")
 	public ResponseEntity<ResponseRegistFreeBoardArticle> registFreeBoardArticle(@RequestBody RequestRegistFreeBoardArticle requestRegistFreeBoardArticle) {
-		mapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
+		// mapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
 		ArticleDTO requestArticleDTO = mapper.map(requestRegistFreeBoardArticle, ArticleDTO.class);
 		ArticleDTO responseArticleDTO = articleService.registFreeBoardArticle(requestArticleDTO);
-
-		responseArticleDTO.setReplyDTOList(new ArrayList<>());
 
 		return ResponseEntity
 			.status(HttpStatus.CREATED)
