@@ -1,8 +1,11 @@
-package org.iot.itty.login.service;
+package org.iot.itty.login.controller;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.when;
+import static org.assertj.core.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
+import org.iot.itty.dto.UserDTO;
+import org.iot.itty.login.service.LoginServiceImpl;
+import org.iot.itty.user.repository.UserRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -11,13 +14,11 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.iot.itty.dto.UserDTO;
-import org.iot.itty.user.repository.UserRepository;
 
 @ExtendWith(MockitoExtension.class)
 @SpringBootTest
 @AutoConfigureMockMvc
-public class LoginServiceTests {
+public class LoginControllerTests {
 	@Mock
 	private UserRepository userRepository;
 
@@ -60,8 +61,8 @@ public class LoginServiceTests {
 		// When
 		IllegalStateException exception =
 			org.junit.jupiter.api.Assertions.assertThrows(IllegalStateException.class, () -> {
-			loginServiceImpl.registUser(userDTO);
-		});
+				loginServiceImpl.registUser(userDTO);
+			});
 
 		// Then
 		assertThat(exception.getMessage())
