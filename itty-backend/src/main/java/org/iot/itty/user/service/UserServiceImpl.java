@@ -28,8 +28,6 @@ public class UserServiceImpl implements UserService{
 		user.setUserNickname(userDTO.getUserNickname());
 		user.setUserIntroduction(userDTO.getUserIntroduction());
 
-		System.out.println(user.getUserIntroduction());
-		System.out.println(user.getUserNickname());
 		return modelMapper.map(user, UserDTO.class);
 	}
 

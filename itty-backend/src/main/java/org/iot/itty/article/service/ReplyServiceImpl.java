@@ -1,13 +1,16 @@
 package org.iot.itty.article.service;
 
+import java.util.Date;
 import java.util.List;
 
 import org.iot.itty.article.aggregate.ReplyEntity;
 import org.iot.itty.article.repository.ReplyRepository;
 import org.iot.itty.dto.ReplyDTO;
 import org.modelmapper.ModelMapper;
+import org.modelmapper.convention.MatchingStrategies;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class ReplyServiceImpl implements ReplyService{
@@ -39,5 +42,19 @@ public class ReplyServiceImpl implements ReplyService{
 			.stream()
 			.map(ReplyEntity -> mapper.map(ReplyEntity, ReplyDTO.class))
 			.toList();
+	}
+
+	@Transactional
+	@Override
+	public ReplyDTO registReply(ReplyDTO requestReplyDTO) {
+		ReplyEntity replyEntity = ReplyEntity.builder()
+			.replyContent(requestReplyDTO.getReplyContent())
+			.userCodeFk(requestReplyDTO.getUserCodeFk())
+			.articleCodeFk(requestReplyDTO.getArticleCodeFk())
+			.replyCreatedDate(new Date())
+			.replyLastUpdatedDate(new Date())
+			.build();
+		mapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
+		return mapper.map(replyRepository.save(replyEntity), ReplyDTO.class);
 	}
 }

@@ -1,15 +1,15 @@
-package org.iot.itty.dto;
+package org.iot.itty.article.vo;
 
 import java.util.Date;
 import java.util.List;
 
-import org.iot.itty.article.vo.ResponseReplyOfArticleList;
+import org.iot.itty.dto.ReplyDTO;
 import org.iot.itty.user.vo.ResponseAuthorOfArticleList;
 
 import lombok.Data;
 
 @Data
-public class ArticleDTO {
+public class ResponseSelectAllFreeBoardArticle {
 	private int articleCodePk;
 	private String articleTitle;
 	private String articleContent;
@@ -20,5 +20,4 @@ public class ArticleDTO {
 	private int articleViewCount;
 	private ResponseAuthorOfArticleList authorOfArticle;
 	private List<ResponseReplyOfArticleList> summarizedReplyDTOList;
-	private List<ReplyDTO> replyDTOList;
 }
