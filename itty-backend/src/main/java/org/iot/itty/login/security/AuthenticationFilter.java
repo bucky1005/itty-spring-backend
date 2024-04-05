@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.iot.itty.dto.UserDTO;
 import org.iot.itty.login.service.LoginService;
@@ -76,7 +77,8 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 		roles.add("ROLE_USER");
 
 		Claims claims = Jwts.claims().setSubject(userDetails.getUserEmail());
-		claims.put("auth", roles);
+		// claims.put("auth", roles);
+		claims.put("auth", roles.stream().filter(role -> role.equals("ROLE_USER")).collect(Collectors.toList()));
 
 		/* 이메일을 조회하여 해당 유저의 사용자의 인증(principal) 이름을 반환 */
 		UserDTO userDTO = loginService.searchUserEmail(authResult.getName());
