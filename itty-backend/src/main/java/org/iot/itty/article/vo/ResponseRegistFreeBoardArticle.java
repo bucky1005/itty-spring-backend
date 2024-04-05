@@ -17,5 +17,4 @@ public class ResponseRegistFreeBoardArticle {
 	private int userCodeFk;
 	private int articleCategory;
 	private int articleViewCount;
-	private List<ReplyDTO> replyDTOList;
 }
