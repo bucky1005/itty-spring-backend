@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.iot.itty.article.vo.ResponseSelectAllArticleByUserCodeFk;
 import org.iot.itty.article.vo.ResponseSelectAllReplyByUserCodeFk;
+import org.iot.itty.article.vo.ResponseSelectAllReplyLikedByUserCodeFk;
 
 import lombok.Data;
 
@@ -20,4 +21,5 @@ public class ResponseSelectUserByUserCodePk {
 	private int userDeleteStatus;
 	private List<ResponseSelectAllArticleByUserCodeFk> articleDTOList;
 	private List<ResponseSelectAllReplyByUserCodeFk> replyDTOList;
+	private List<ResponseSelectAllReplyLikedByUserCodeFk> likedReplyDTOList;
 }

@@ -3,10 +3,13 @@ package org.iot.itty.user.controller;
 import java.util.List;
 
 import org.iot.itty.article.service.ArticleService;
+import org.iot.itty.article.service.LikeService;
 import org.iot.itty.article.service.ReplyService;
 import org.iot.itty.article.vo.ResponseSelectAllArticleByUserCodeFk;
 import org.iot.itty.article.vo.ResponseSelectAllReplyByUserCodeFk;
+import org.iot.itty.article.vo.ResponseSelectAllReplyLikedByUserCodeFk;
 import org.iot.itty.dto.ArticleDTO;
+import org.iot.itty.dto.ReplyDTO;
 import org.iot.itty.dto.UserDTO;
 import org.iot.itty.user.service.UserService;
 import org.iot.itty.user.vo.RequestUserModify;
@@ -31,13 +34,22 @@ public class UserController {
 	private final UserService userService;
 	private final ArticleService articleService;
 	private final ReplyService replyService;
+	private final LikeService likeService;
 
 	@Autowired
-	public UserController(ModelMapper modelMapper, UserService userService, ArticleService articleService, ReplyService replyService) {
+	public UserController(
+		ModelMapper modelMapper,
+		UserService userService,
+		ArticleService articleService,
+		ReplyService replyService,
+		LikeService likeService
+	)
+	{
 		this.modelMapper = modelMapper;
 		this.userService = userService;
 		this.articleService = articleService;
 		this.replyService = replyService;
+		this.likeService = likeService;
 	}
 
 	/* 회원별 회원정보 조회 */
@@ -45,20 +57,30 @@ public class UserController {
 	public ResponseEntity<ResponseSelectUserByUserCodePk> selectUserByUserCodePk(@PathVariable("userCodePk") int userCodePk) {
 		UserDTO userDTO = userService.selectUserByUserCodePk(userCodePk);
 
+		/* 해당 회원이 작성한 게시글 리스트 가져오기 */
 		List<ResponseSelectAllArticleByUserCodeFk> responseSelectAllArticleByUserCodeFkList =
 			articleService.selectAllArticleByUserCodeFk(userCodePk)
 				.stream()
 				.map(ArticleDTO -> modelMapper.map(ArticleDTO, ResponseSelectAllArticleByUserCodeFk.class))
 				.toList();
 
+		/* 해당 회원이 작성한 댓글 리스트 가져오기 */
 		List<ResponseSelectAllReplyByUserCodeFk> responseSelectAllReplyByUserCodeFkList =
 			replyService.selectAllReplyByUserCodeFk(userCodePk)
 				.stream()
 				.map(ReplyDTO -> modelMapper.map(ReplyDTO, ResponseSelectAllReplyByUserCodeFk.class))
 				.toList();
 
+		/* 해당 회원이 좋아요 누른 댓글 리스트 가져오기 */
+		List<ResponseSelectAllReplyLikedByUserCodeFk> responseSelectAllReplyLikedByUserCodeFkList =
+			likeService.selectAllLikeByUserCodeFk(userCodePk)
+				.stream()
+				.map(ReplyDTO -> modelMapper.map(ReplyDTO, ResponseSelectAllReplyLikedByUserCodeFk.class))
+				.toList();
+
 		userDTO.setArticleDTOList(responseSelectAllArticleByUserCodeFkList);
 		userDTO.setReplyDTOList(responseSelectAllReplyByUserCodeFkList);
+		userDTO.setLikedReplyDTOList(responseSelectAllReplyLikedByUserCodeFkList);
 		return ResponseEntity.status(HttpStatus.OK).body(modelMapper.map(userDTO, ResponseSelectUserByUserCodePk.class));
 	}
 
