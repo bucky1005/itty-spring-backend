@@ -30,4 +30,14 @@ public class ReplyServiceImpl implements ReplyService{
 			.map(ReplyEntity -> mapper.map(ReplyEntity, ReplyDTO.class))
 			.toList();
 	}
+
+	@Override
+	public List<ReplyDTO> selectAllReplyByUserCodeFk(int userCodeFk) {
+		List<ReplyEntity> replyEntityList = replyRepository.findAllByUserCodeFk(userCodeFk);
+
+		return replyEntityList
+			.stream()
+			.map(ReplyEntity -> mapper.map(ReplyEntity, ReplyDTO.class))
+			.toList();
+	}
 }

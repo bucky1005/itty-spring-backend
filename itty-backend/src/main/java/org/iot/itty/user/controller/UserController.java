@@ -1,14 +1,24 @@
 package org.iot.itty.user.controller;
 
+import java.util.List;
+
+import org.iot.itty.article.service.ArticleService;
+import org.iot.itty.article.service.ReplyService;
+import org.iot.itty.article.vo.ResponseSelectAllArticleByUserCodeFk;
+import org.iot.itty.article.vo.ResponseSelectAllReplyByUserCodeFk;
+import org.iot.itty.dto.ArticleDTO;
 import org.iot.itty.dto.UserDTO;
 import org.iot.itty.user.service.UserService;
 import org.iot.itty.user.vo.RequestUserModify;
+import org.iot.itty.user.vo.ResponseSelectUserByUserCodePk;
 import org.iot.itty.user.vo.ResponseUserModify;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -19,13 +29,40 @@ import org.springframework.web.bind.annotation.RestController;
 public class UserController {
 	private final ModelMapper modelMapper;
 	private final UserService userService;
+	private final ArticleService articleService;
+	private final ReplyService replyService;
 
 	@Autowired
-	public UserController(ModelMapper modelMapper, UserService userService) {
+	public UserController(ModelMapper modelMapper, UserService userService, ArticleService articleService, ReplyService replyService) {
 		this.modelMapper = modelMapper;
 		this.userService = userService;
+		this.articleService = articleService;
+		this.replyService = replyService;
 	}
 
+	/* 회원별 회원정보 조회 */
+	@GetMapping("/user/{userCodePk}")
+	public ResponseEntity<ResponseSelectUserByUserCodePk> selectUserByUserCodePk(@PathVariable("userCodePk") int userCodePk) {
+		UserDTO userDTO = userService.selectUserByUserCodePk(userCodePk);
+
+		List<ResponseSelectAllArticleByUserCodeFk> responseSelectAllArticleByUserCodeFkList =
+			articleService.selectAllArticleByUserCodeFk(userCodePk)
+				.stream()
+				.map(ArticleDTO -> modelMapper.map(ArticleDTO, ResponseSelectAllArticleByUserCodeFk.class))
+				.toList();
+
+		List<ResponseSelectAllReplyByUserCodeFk> responseSelectAllReplyByUserCodeFkList =
+			replyService.selectAllReplyByUserCodeFk(userCodePk)
+				.stream()
+				.map(ReplyDTO -> modelMapper.map(ReplyDTO, ResponseSelectAllReplyByUserCodeFk.class))
+				.toList();
+
+		userDTO.setArticleDTOList(responseSelectAllArticleByUserCodeFkList);
+		userDTO.setReplyDTOList(responseSelectAllReplyByUserCodeFkList);
+		return ResponseEntity.status(HttpStatus.OK).body(modelMapper.map(userDTO, ResponseSelectUserByUserCodePk.class));
+	}
+
+	/* 회원정보 수정 */
 	@PostMapping("/user/modify")
 	public ResponseEntity<ResponseUserModify> modifyUser(@RequestBody RequestUserModify modifyUserData){
 

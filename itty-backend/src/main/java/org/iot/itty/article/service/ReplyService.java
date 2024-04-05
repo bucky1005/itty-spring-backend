@@ -6,4 +6,6 @@ import org.iot.itty.dto.ReplyDTO;
 
 public interface ReplyService {
 	List<ReplyDTO> selectReplyByArticleCodeFk(int articleCodePk);
+
+	List<ReplyDTO> selectAllReplyByUserCodeFk(int userCodeFk);
 }
