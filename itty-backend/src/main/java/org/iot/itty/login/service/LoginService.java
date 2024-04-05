@@ -12,4 +12,5 @@ public interface LoginService extends UserDetailsService {
 
 	UserDTO searchUserEmail(String userEmail);
 
+	boolean userWithdrawal(UserDTO userDTO);
 }

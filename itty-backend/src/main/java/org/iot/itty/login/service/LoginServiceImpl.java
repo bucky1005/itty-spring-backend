@@ -32,6 +32,7 @@ public class LoginServiceImpl implements LoginService {
 	/* 회원 가입 */
 	@Override
 	public int registUser(UserDTO userDTO) {
+
 		String userEmail = userDTO.getUserEmail();
 		String userPassword = userDTO.getUserPassword();
 		String userName = userDTO.getUserName();
@@ -58,6 +59,28 @@ public class LoginServiceImpl implements LoginService {
 
 		userRepository.save(data);
 		return data.getUserCodePk();
+	}
+
+	@Override
+	public boolean userWithdrawal(UserDTO userDTO) {
+
+		boolean isWithdrawalSuccessful = true;
+		UserEntity user = userRepository.findByUserEmail(userDTO.getUserEmail());
+
+		if(user != null) {
+			if (user.getUserDeleteStatus() != 1) {
+
+				user.setUserDeleteStatus(1);
+
+				userRepository.save(user);
+
+				return isWithdrawalSuccessful;
+			}
+		} else {
+			throw new IllegalAccessError("'" + userDTO.getUserEmail() + "' 해당 유저를 찾을 수 없습니다.");
+		}
+
+		return !isWithdrawalSuccessful;
 	}
 
 	/* 토큰 발급을 위한 유저 이메일 조회 메소드 */
