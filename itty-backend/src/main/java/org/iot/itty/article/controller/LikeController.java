@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.iot.itty.article.service.LikeService;
-import org.iot.itty.article.vo.ResponseSelectAllLikeByUserCodeFk;
-import org.iot.itty.dto.LikeDTO;
+import org.iot.itty.article.vo.ResponseSelectAllReplyLikedByUserCodeFk;
+import org.iot.itty.dto.ReplyDTO;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -29,17 +29,17 @@ public class LikeController {
 	}
 
 	@GetMapping("/user/{userCodeFk}/likes")
-	public ResponseEntity<List<ResponseSelectAllLikeByUserCodeFk>> selectAllLikeByUserCodeFk(@PathVariable("userCodeFk") int userCodeFk) {
-		List<LikeDTO> likeDTOList = likeService.selectAllLikeByUserCodeFk(userCodeFk);
-		List<ResponseSelectAllLikeByUserCodeFk> responseSelectAllLikeByUserCodeFkList = new ArrayList<>();
+	public ResponseEntity<List<ResponseSelectAllReplyLikedByUserCodeFk>> selectAllLikeByUserCodeFk(@PathVariable("userCodeFk") int userCodeFk) {
+		List<ReplyDTO> replyDTOList = likeService.selectAllLikeByUserCodeFk(userCodeFk);
+		List<ResponseSelectAllReplyLikedByUserCodeFk> responseSelectAllReplyLikedByUserCodeFkList = new ArrayList<>();
 
-		if (likeDTOList != null) {
-			responseSelectAllLikeByUserCodeFkList = likeDTOList
+		if (replyDTOList != null) {
+			responseSelectAllReplyLikedByUserCodeFkList = replyDTOList
 				.stream()
-				.map(LikeDTO -> modelMapper.map(LikeDTO, ResponseSelectAllLikeByUserCodeFk.class))
+				.map(ReplyDTO -> modelMapper.map(ReplyDTO, ResponseSelectAllReplyLikedByUserCodeFk.class))
 				.toList();
 		}
 
-		return ResponseEntity.status(HttpStatus.OK).body(responseSelectAllLikeByUserCodeFkList);
+		return ResponseEntity.status(HttpStatus.OK).body(responseSelectAllReplyLikedByUserCodeFkList);
 	}
 }
