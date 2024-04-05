@@ -32,4 +32,11 @@ public class UserServiceImpl implements UserService{
 		System.out.println(user.getUserNickname());
 		return modelMapper.map(user, UserDTO.class);
 	}
+
+	@Override
+	public UserDTO selectUserByUserCodePk(int userCodePk) {
+		UserEntity userEntity = userRepository.findById(userCodePk).orElseThrow(IllegalAccessError::new);
+
+		return modelMapper.map(userEntity, UserDTO.class);
+	}
 }
