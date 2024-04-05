@@ -11,9 +11,13 @@ import org.iot.itty.article.vo.ResponseArticle;
 import org.iot.itty.article.vo.ResponseDeleteFreeBoardArticle;
 import org.iot.itty.article.vo.ResponseModifyFreeBoardArticle;
 import org.iot.itty.article.vo.ResponseRegistFreeBoardArticle;
+import org.iot.itty.article.vo.ResponseReplyOfArticleList;
 import org.iot.itty.article.vo.ResponseSelectAllArticleByUserCodeFk;
+import org.iot.itty.article.vo.ResponseSelectAllFreeBoardArticle;
 import org.iot.itty.dto.ArticleDTO;
 import org.iot.itty.dto.ReplyDTO;
+import org.iot.itty.user.service.UserService;
+import org.iot.itty.user.vo.ResponseAuthorOfArticleList;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,28 +38,39 @@ public class ArticleController {
 
 	private final ArticleService articleService;
 	private final ReplyService replyService;
+	private final UserService userService;
 	private final ModelMapper mapper;
 
 	@Autowired
-	public ArticleController(ArticleService articleService, ReplyService replyService, ModelMapper mapper) {
+	public ArticleController(ArticleService articleService, ReplyService replyService, UserService userService, ModelMapper mapper) {
 		this.articleService = articleService;
 		this.replyService = replyService;
+		this.userService = userService;
 		this.mapper = mapper;
 	}
 
 	/* 자유게시판 전체조회 */
 	@GetMapping("/article/freeboard")
-	public ResponseEntity<List<ResponseArticle>> selectAllArticleFromFreeBoard() {
+	public ResponseEntity<List<ResponseSelectAllFreeBoardArticle>> selectAllArticleFromFreeBoard() {
 		List<ArticleDTO> articleDTOList = articleService.selectAllArticleFromFreeBoard();
 
 		mapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
-		List<ResponseArticle> responseArticleList = new ArrayList<>();
+		List<ResponseSelectAllFreeBoardArticle> responseArticleList = new ArrayList<>();
 
 		if (articleDTOList != null) {
 			responseArticleList = articleDTOList
 				.stream()
-				.peek(articleDTO -> articleDTO.setReplyDTOList(replyService.selectReplyByArticleCodeFk(articleDTO.getArticleCodePk())))
-				.map(ArticleDTO -> mapper.map(ArticleDTO, ResponseArticle.class))
+				.peek(articleDTO -> articleDTO
+					.setSummarizedReplyDTOList(
+						replyService.selectReplyByArticleCodeFk(articleDTO.getArticleCodePk())
+							.stream()
+							.map(ReplyDTO -> mapper.map(ReplyDTO, ResponseReplyOfArticleList.class))
+							.toList()
+					)
+				)
+				.peek(articleDTO -> articleDTO
+					.setAuthorOfArticle(mapper.map(userService.selectUserByUserCodePk(articleDTO.getUserCodeFk()), ResponseAuthorOfArticleList.class)))
+				.map(ArticleDTO -> mapper.map(ArticleDTO, ResponseSelectAllFreeBoardArticle.class))
 				.toList();
 		}
 
