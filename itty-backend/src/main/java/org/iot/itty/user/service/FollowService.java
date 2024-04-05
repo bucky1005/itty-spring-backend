@@ -8,4 +8,6 @@ public interface FollowService {
 	List<FollowDTO> selectAllFollower(int userCodePk);
 
 	List<FollowDTO> selectAllFollowing(int userCodePk);
+
+	FollowDTO addFollowing(int userCodePk, int followeeCodeFk);
 }

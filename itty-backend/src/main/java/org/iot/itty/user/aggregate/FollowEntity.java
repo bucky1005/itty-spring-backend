@@ -7,13 +7,14 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
+import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @Table(name = "follow_tb")
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Getter
+@Data
 public class FollowEntity {
 
 	@Id

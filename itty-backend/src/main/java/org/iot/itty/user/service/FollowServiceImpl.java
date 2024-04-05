@@ -40,4 +40,19 @@ public class FollowServiceImpl implements FollowService{
 			.map(FollowEntity -> modelMapper.map(FollowEntity, FollowDTO.class))
 			.toList();
 	}
+
+	@Override
+	public FollowDTO addFollowing(int userCodePk, int followeeCodeFk) {
+		List<FollowEntity> followEntityList = followRepository.findAll();
+		for (FollowEntity followEntity : followEntityList) {
+			if (followEntity.getFollowerCodeFk() == userCodePk && followEntity.getFolloweeCodeFk() == followeeCodeFk) {
+				return null;
+			}
+		}
+		FollowEntity followEntity = new FollowEntity();
+		followEntity.setFollowerCodeFk(userCodePk);
+		followEntity.setFolloweeCodeFk(followeeCodeFk);
+
+		return modelMapper.map(followRepository.save(followEntity), FollowDTO.class);
+	}
 }
