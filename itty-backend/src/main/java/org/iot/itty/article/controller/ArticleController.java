@@ -48,7 +48,7 @@ public class ArticleController {
 	public ResponseEntity<List<ResponseArticle>> selectAllArticleFromFreeBoard() {
 		List<ArticleDTO> articleDTOList = articleService.selectAllArticleFromFreeBoard();
 
-		mapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
+		// mapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
 		List<ResponseArticle> responseArticleList = new ArrayList<>();
 
 		if (articleDTOList != null) {
