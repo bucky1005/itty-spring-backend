@@ -9,7 +9,7 @@ import java.util.Arrays;
 import org.iot.itty.article.service.ReplyService;
 import org.iot.itty.article.vo.ResponseSelectReplyByArticleCodeFk;
 import org.iot.itty.dto.ReplyDTO;
-import org.iot.itty.user.service.UserService;
+
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.modelmapper.ModelMapper;

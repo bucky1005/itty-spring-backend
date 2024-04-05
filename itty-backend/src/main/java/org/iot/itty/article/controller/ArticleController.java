@@ -83,7 +83,7 @@ public class ArticleController {
 		ArticleDTO articleDTO = articleService.selectFreeBoardArticleByArticleCodePk(articleCodePk);
 		articleDTO.setReplyDTOList(replyService.selectReplyByArticleCodeFk(articleCodePk));
 
-		mapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
+		// mapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
 		return ResponseEntity.status(HttpStatus.OK).body(mapper.map(articleDTO, ResponseArticle.class));
 
 	}
