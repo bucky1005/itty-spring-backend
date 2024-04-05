@@ -39,7 +39,7 @@ public class LoginServiceImpl implements LoginService {
 		String userNickname = userDTO.getUserNickname();
 
 		// 아이디 중복 체크
-		Boolean isExist = userRepository.existsByUserEmail(userEmail);
+		boolean isExist = userRepository.existsByUserEmail(userEmail);
 
 		if (isExist) {
 			throw new IllegalStateException("'" + userEmail + "'는(은) 이미 존재하는 사용자 입니다.");
