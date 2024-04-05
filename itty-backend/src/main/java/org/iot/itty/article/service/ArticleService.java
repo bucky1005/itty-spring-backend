@@ -9,6 +9,8 @@ public interface ArticleService {
 
 	ArticleDTO selectFreeBoardArticleByArticleCodePk(int articleCodePk);
 
+	List<ArticleDTO> selectAllArticleByUserCodeFk(int userCodeFk);
+
 	ArticleDTO registFreeBoardArticle(ArticleDTO requestArticleDTO);
 
 	ArticleDTO modifyFreeBoardArticle(ArticleDTO requestArticleDTO, int articleCodePk);
