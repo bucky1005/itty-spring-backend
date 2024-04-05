@@ -68,12 +68,19 @@ public class LoginServiceImpl implements LoginService {
 		UserEntity user = userRepository.findByUserEmail(userDTO.getUserEmail());
 
 		if(user != null) {
-			user.setUserDeleteStatus(1);
+			if (user.getUserDeleteStatus() != 1) {
 
-			return isWithdrawalSuccessful;
+				user.setUserDeleteStatus(1);
+
+				userRepository.save(user);
+
+				return isWithdrawalSuccessful;
+			}
 		} else {
 			throw new IllegalAccessError("'" + userDTO.getUserEmail() + "' 해당 유저를 찾을 수 없습니다.");
 		}
+
+		return !isWithdrawalSuccessful;
 	}
 
 	/* 토큰 발급을 위한 유저 이메일 조회 메소드 */

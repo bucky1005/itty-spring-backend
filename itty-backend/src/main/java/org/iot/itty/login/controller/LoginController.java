@@ -70,7 +70,7 @@ public class LoginController {
 
 			return ResponseEntity.status(HttpStatus.OK).body(responseWithdrawal);
 		} else {
-			responseWithdrawal.setMessage("해당 유저는 존재하지 않습니다.");
+			responseWithdrawal.setMessage("이미 탈퇴한 회원입니다.");
 			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(responseWithdrawal);
 		}
 	}
