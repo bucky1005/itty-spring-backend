@@ -1,9 +1,17 @@
 package org.iot.itty.login.service;
 
+import java.util.ArrayList;
+
 import org.iot.itty.dto.UserDTO;
 import org.iot.itty.user.aggregate.UserEntity;
 import org.iot.itty.user.repository.UserRepository;
+import org.modelmapper.ModelMapper;
+import org.modelmapper.convention.MatchingStrategies;
+import org.modelmapper.spi.MatchingStrategy;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -21,6 +29,7 @@ public class LoginServiceImpl implements LoginService {
 		this.bCryptPasswordEncoder = bCryptPasswordEncoder;
 	}
 
+	/* 회원 가입 */
 	@Override
 	public int registUser(UserDTO userDTO) {
 		String userEmail = userDTO.getUserEmail();
@@ -49,5 +58,45 @@ public class LoginServiceImpl implements LoginService {
 
 		userRepository.save(data);
 		return data.getUserCodePk();
+	}
+
+	/* 토큰 발급을 위한 유저 이메일 조회 메소드 */
+	@Override
+	public UserDTO getUserDetailsByUserEmail(String userEmail) {
+		UserEntity userEntity = userRepository.findByUserEmail(userEmail);
+
+		if(userEntity == null)
+			throw new UsernameNotFoundException(userEmail);
+
+		ModelMapper mapper = new ModelMapper();
+		mapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
+
+		UserDTO userDTO = mapper.map(userEntity, UserDTO.class);
+
+		return userDTO;
+	}
+
+	/* DB에서 유저 정보를 가져와 입력된 정보와 비교할 User 객체 생성 */
+	@Override
+	public UserDetails loadUserByUsername(String userEmail) throws UsernameNotFoundException {
+		UserEntity userEntity = userRepository.findByUserEmail(userEmail);
+
+		if(userEntity == null) {
+			throw new UsernameNotFoundException("'" + userEmail + "' 해당 유저는 존재하지 않습니다.");
+		}
+
+		return new User(userEntity.getUserEmail(), userEntity.getUserPassword(),
+			true, true, true, true,
+			new ArrayList<>());
+	}
+
+	@Override
+	public UserDTO searchUserEmail(String userEmail) {
+		UserEntity userEntity = userRepository.findByUserEmail(userEmail);
+
+		ModelMapper mapper = new ModelMapper();
+		UserDTO userDTO = mapper.map(userEntity, UserDTO.class);
+
+		return userDTO;
 	}
 }
