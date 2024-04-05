@@ -32,7 +32,7 @@ public class FollowController {
 		this.followService = followService;
 	}
 
-	@GetMapping("user/{userCodePk}/follwer")
+	@GetMapping("user/{userCodePk}/follower")
 	public ResponseEntity<List<ResponseFollower>> selectAllFollower(@PathVariable("userCodePk") int userCodePk) {
 		List<FollowDTO> followerDTOList = followService.selectAllFollower(userCodePk);
 		List<UserDTO> userDTOList = userService.selectAllFollowerUser(followerDTOList);
@@ -43,7 +43,7 @@ public class FollowController {
 			.toList());
 	}
 
-	@GetMapping("user/{userCodePk}/follwing")
+	@GetMapping("user/{userCodePk}/following")
 	public ResponseEntity<List<ResponseFollowing>> selectAllFollowing(@PathVariable("userCodePk") int userCodePk) {
 		List<FollowDTO> followingDTOList = followService.selectAllFollowing(userCodePk);
 		List<UserDTO> userDTOList = userService.selectAllFollowingUser(followingDTOList);
