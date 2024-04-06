@@ -55,4 +55,16 @@ public class FollowServiceImpl implements FollowService{
 
 		return modelMapper.map(followRepository.save(followEntity), FollowDTO.class);
 	}
+
+	@Override
+	public String unFollowing(int userCodePk, int followeeCodeFk) {
+		List<FollowEntity> followEntityList = followRepository.findAll();
+		for (int i = 0; i < followEntityList.size(); i++) {
+			if (followEntityList.get(i).getFollowerCodeFk() == userCodePk && followEntityList.get(i).getFolloweeCodeFk() == followeeCodeFk) {
+				followRepository.deleteById(followEntityList.get(i).getFollowCodePk());
+				return "언팔 완료";
+			}
+		}
+		return "팔로잉 X";
+	}
 }
