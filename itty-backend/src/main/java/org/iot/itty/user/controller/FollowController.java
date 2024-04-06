@@ -82,6 +82,6 @@ public class FollowController {
 		ResponseUnFollow responseUnFollow = new ResponseUnFollow();
 		responseUnFollow.setMessage(responseFollowDTO);
 
-		return ResponseEntity.status(HttpStatus.OK).body(responseUnFollow);
+		return ResponseEntity.status(HttpStatus.NO_CONTENT).body(responseUnFollow);
 	}
 }
