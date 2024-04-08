@@ -16,5 +16,5 @@ spring:
         '[format_sql]': true
 
 token:
-  expiration_time: 3600000
+#  expiration_time: 86400000 #1일
   secret: k/3f0rHITyFhkBQWfa7rlSAQ3s07wIgj7pUGgq5Q4EXbihvcPPapnHnKQAWV+u3mXJzIBQ9Cm++F0JPEHIv80g==

@@ -48,6 +48,9 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 			RequestLogin requestLogin =
 				new ObjectMapper().readValue(request.getInputStream(), RequestLogin.class);
 
+			log.info("로그인 시도. 아이디: " + requestLogin.getUserEmail()
+				+ "비밀번호: " + requestLogin.getUserPassword());
+
 			/* 사용자가 전달한 id, pwd를 사용해 authentication 토큰 생성 */
 			return getAuthenticationManager().authenticate(
 				new UsernamePasswordAuthenticationToken(
@@ -55,7 +58,7 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 			);
 
 		} catch (IOException e) {
-			throw new RuntimeException(e);
+			throw new InputNotFoundException();
 		}
 	}
 
@@ -77,7 +80,6 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 		roles.add("ROLE_USER");
 
 		Claims claims = Jwts.claims().setSubject(userDetails.getUserEmail());
-		// claims.put("auth", roles);
 		claims.put("auth", roles.stream().filter(role -> role.equals("ROLE_USER")).collect(Collectors.toList()));
 
 		/* 이메일을 조회하여 해당 유저의 사용자의 인증(principal) 이름을 반환 */

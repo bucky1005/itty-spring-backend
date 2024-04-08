@@ -24,19 +24,17 @@ import java.util.stream.Collectors;
 public class JwtUtil {
 
 	private final Key key;
-	private final long accessTokenExpTime;
 	private final LoginService loginService;
+	private final long accessTokenExpTime = 15 * 60 * 1000L;
+	private final long RefreshTokenExpTime = 2 * 24 * 60 * 1000L;
 
 	public JwtUtil(
 		@Value("${token.secret}") String secretKey,
-		@Value("${token.expiration_time}") long accessTokenExpTime,
 		LoginService loginService) {
 		byte[] keyBytes = Decoders.BASE64.decode(secretKey);
 		this.key = Keys.hmacShaKeyFor(keyBytes);
-		this.accessTokenExpTime = accessTokenExpTime;
 		this.loginService = loginService;
 	}
-
 
 	/* AccessToken에서 인증 객체(Authentication) 추출 */
 	public Authentication getAuthentication(String token) {
