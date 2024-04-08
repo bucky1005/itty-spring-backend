@@ -24,7 +24,7 @@ public class CrawlingController {
 		this.crawlingService = crawlingService;
 	}
 
-	@GetMapping("/trends")
+	@GetMapping("/article/trends")
 	public ResponseEntity<List<CrawledArticle>> getTrendNews() throws IOException {
 		List<CrawledArticle> articleList = crawlingService.getTrendNews();
 
