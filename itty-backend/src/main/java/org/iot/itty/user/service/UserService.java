@@ -11,4 +11,6 @@ public interface UserService {
 	List<UserDTO> selectAllFollowerUser(List<FollowDTO> followerDTOList);
 
 	List<UserDTO> selectAllFollowingUser(List<FollowDTO> followingDTOList);
+
+	UserDTO selectUserByUserCodePk(int userCodePk);
 }

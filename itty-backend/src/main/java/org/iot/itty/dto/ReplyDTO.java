@@ -12,4 +12,5 @@ public class ReplyDTO {
 	private int articleCodeFk;
 	private Date replyCreatedDate;
 	private Date replyLastUpdatedDate;
+	private UserDTO userDTO;
 }

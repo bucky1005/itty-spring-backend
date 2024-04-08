@@ -1,6 +1,7 @@
 package org.iot.itty.dto;
 
 import java.util.Date;
+import java.util.List;
 
 import lombok.Data;
 
@@ -14,4 +15,5 @@ public class ArticleDTO {
 	private int userCodeFk;
 	private int articleCategory;
 	private int articleViewCount;
+	private List<ReplyDTO> replyDTOList;
 }

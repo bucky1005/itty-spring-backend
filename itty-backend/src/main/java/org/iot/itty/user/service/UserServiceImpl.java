@@ -54,4 +54,11 @@ public class UserServiceImpl implements UserService{
 		}
 		return userDTOList;
 	}
+
+	@Override
+	public UserDTO selectUserByUserCodePk(int userCodePk) {
+		UserEntity userEntity = userRepository.findById(userCodePk).orElseThrow(IllegalAccessError::new);
+
+		return modelMapper.map(userEntity, UserDTO.class);
+	}
 }

@@ -9,6 +9,7 @@ import org.iot.itty.user.service.UserService;
 import org.iot.itty.user.vo.ResponseFollow;
 import org.iot.itty.user.vo.ResponseFollower;
 import org.iot.itty.user.vo.ResponseFollowing;
+import org.iot.itty.user.vo.ResponseUnFollow;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -69,5 +70,18 @@ public class FollowController {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
 		}
 		return ResponseEntity.status(HttpStatus.CREATED).body(modelMapper.map(responseFollowDTO, ResponseFollow.class));
+	}
+
+	@DeleteMapping("/unfollow/{userCodePk}/{followeeCodeFk}")
+	public ResponseEntity<ResponseUnFollow> unFollow(
+		@PathVariable("userCodePk") int userCodePk,
+		@PathVariable("followeeCodeFk") int followeeCodeFk
+	)
+	{
+		String responseFollowDTO = followService.unFollowing(userCodePk, followeeCodeFk);
+		ResponseUnFollow responseUnFollow = new ResponseUnFollow();
+		responseUnFollow.setMessage(responseFollowDTO);
+
+		return ResponseEntity.status(HttpStatus.OK).body(responseUnFollow);
 	}
 }
