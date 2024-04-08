@@ -50,6 +50,9 @@ dependencies {
     //elasticsearch 추가
     implementation 'org.springframework.boot:spring-boot-starter-data-elasticsearch'
 
+    // selenium 추가 (크롤링)
+    // https://mvnrepository.com/artifact/org.seleniumhq.selenium/selenium-java
+    implementation 'org.seleniumhq.selenium:selenium-java:4.19.1'
 }
 
 tasks.named('test') {
