@@ -3,6 +3,7 @@ package org.iot.itty.login.security;
 import org.iot.itty.login.jwt.JwtFilter;
 import org.iot.itty.login.jwt.JwtUtil;
 import org.iot.itty.login.service.LoginService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
@@ -27,6 +28,7 @@ public class WebSecurityConfig {
 	private final BCryptPasswordEncoder bCryptPasswordEncoder;
 	private final JwtUtil jwtUtil;
 
+	@Autowired
 	public WebSecurityConfig(LoginService loginService, Environment environment,
 		BCryptPasswordEncoder bCryptPasswordEncoder, JwtUtil jwtUtil) {
 		this.loginService = loginService;
@@ -58,6 +60,7 @@ public class WebSecurityConfig {
 
 			// 전체 권한 설정(추후 수정)
 			.requestMatchers(new AntPathRequestMatcher("/**")).permitAll()
+				// .requestMatchers(new AntPathRequestMatcher("/test")).hasRole("USER")
 
 			// 권한 부여 설정을 하지 않은 요청은 로그인된 사용자에게만 허용
 			.anyRequest().authenticated())
@@ -77,4 +80,6 @@ public class WebSecurityConfig {
 	private AuthenticationFilter getAuthenticationFilter(AuthenticationManager authenticationManager) {
 		return new AuthenticationFilter(authenticationManager, loginService, environment);
 	}
+
+
 }

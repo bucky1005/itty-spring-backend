@@ -8,4 +8,6 @@ public interface ReplyService {
 	List<ReplyDTO> selectReplyByArticleCodeFk(int articleCodePk);
 
 	List<ReplyDTO> selectAllReplyByUserCodeFk(int userCodeFk);
+
+	ReplyDTO registReply(ReplyDTO requestReplyDTO);
 }

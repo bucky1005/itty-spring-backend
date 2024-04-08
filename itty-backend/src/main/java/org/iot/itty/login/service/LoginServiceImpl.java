@@ -7,8 +7,8 @@ import org.iot.itty.user.aggregate.UserEntity;
 import org.iot.itty.user.repository.UserRepository;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
-import org.modelmapper.spi.MatchingStrategy;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -77,6 +77,7 @@ public class LoginServiceImpl implements LoginService {
 				return isWithdrawalSuccessful;
 			}
 		} else {
+			// return ResponseEntity.badRequest().build().hasBody();
 			throw new IllegalAccessError("'" + userDTO.getUserEmail() + "' 해당 유저를 찾을 수 없습니다.");
 		}
 
@@ -97,6 +98,11 @@ public class LoginServiceImpl implements LoginService {
 		UserDTO userDTO = mapper.map(userEntity, UserDTO.class);
 
 		return userDTO;
+	}
+
+	@Override
+	public void userLogout() {
+		//Token에서 로그인한 사용자 정보를 가져와 로그아웃 처리
 	}
 
 	/* DB에서 유저 정보를 가져와 입력된 정보와 비교할 User 객체 생성 */

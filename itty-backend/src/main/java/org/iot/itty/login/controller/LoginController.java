@@ -11,6 +11,7 @@ import org.modelmapper.convention.MatchingStrategies;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.web.firewall.HttpStatusRequestRejectedHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 
 @RestController
@@ -52,6 +54,20 @@ public class LoginController {
 		responseRegist.setMessage("회원 가입 성공");
 
 		return ResponseEntity.status(HttpStatus.CREATED).body(responseRegist);
+	}
+
+	/* 토큰 검증 실패 시 실행되는 api */
+	@GetMapping("/error/unauthorized")
+	public ResponseEntity<Void> unauthorized() {
+		return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+	}
+
+	@PostMapping("/logout")
+	public ResponseEntity<Void> userLogout(HttpServletRequest servletRequest) {
+
+		loginService.userLogout();
+
+		return ResponseEntity.status(HttpStatus.OK).build();
 	}
 
 	@PutMapping("/user/withdrawal")
