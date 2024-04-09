@@ -57,4 +57,37 @@ public class ReplyServiceImpl implements ReplyService{
 		mapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
 		return mapper.map(replyRepository.save(replyEntity), ReplyDTO.class);
 	}
+
+	@Override
+	public ReplyDTO modifyReply(ReplyDTO requestReplyDTO, int replyCodePk) {
+		ReplyEntity foundReplyEntity = replyRepository.findById(replyCodePk).get();
+
+		if (requestReplyDTO.getUserCodeFk() == foundReplyEntity.getUserCodeFk()
+			&& requestReplyDTO.getArticleCodeFk() == foundReplyEntity.getArticleCodeFk()) {
+
+			ReplyEntity replyEntity = ReplyEntity.builder()
+				.replyCodePk(replyCodePk)
+				.replyContent(requestReplyDTO.getReplyContent())
+				.userCodeFk(requestReplyDTO.getUserCodeFk())
+				.articleCodeFk(requestReplyDTO.getArticleCodeFk())
+				.replyCreatedDate(foundReplyEntity.getReplyCreatedDate())
+				.replyLastUpdatedDate(new Date())
+				.build();
+			return mapper.map(replyRepository.save(replyEntity), ReplyDTO.class);
+		} else {
+			return null;
+		}
+	}
+
+	@Override
+	public String deleteReply(int replyCodePk) {
+		String message;
+		try {
+			replyRepository.deleteById(replyCodePk);
+			message = "Deleted reply #" + replyCodePk + " successfully.";
+		} catch (Exception e) {
+			message = e.getMessage();
+		}
+		return message;
+	}
 }
