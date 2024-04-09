@@ -31,6 +31,7 @@ public class CrawlingServiceImpl implements CrawlingService{
 				.subject(content.select("h2 a").text())
 				.url(content.select("a").attr("abs:href"))
 				.content(content.select("p a").text())
+				.category(content.select("span em").text())
 				.build();
 			articleList.add(crawledArticle);
 		}
