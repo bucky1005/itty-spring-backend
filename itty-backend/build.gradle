@@ -50,7 +50,7 @@ dependencies {
 
     //elasticsearch 추가
     implementation 'org.springframework.boot:spring-boot-starter-data-elasticsearch'
-
+    runtimeOnly 'io.micrometer:micrometer-registry-prometheus'
 
 
 }
