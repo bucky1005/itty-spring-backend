@@ -18,3 +18,10 @@ spring:
 token:
   expiration_time: 3600000
   secret: k/3f0rHITyFhkBQWfa7rlSAQ3s07wIgj7pUGgq5Q4EXbihvcPPapnHnKQAWV+u3mXJzIBQ9Cm++F0JPEHIv80g==
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+      base-path: /application

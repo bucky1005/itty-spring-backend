@@ -53,6 +53,7 @@ dependencies {
 
     // jsoup HTML parser library @ https://jsoup.org/
     implementation 'org.jsoup:jsoup:1.17.2'
+    runtimeOnly 'io.micrometer:micrometer-registry-prometheus'
 
 
 }
