@@ -11,14 +11,14 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "like_tb")
+@Table(name = "reply_like_tb")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
-public class LikeEntity {
+public class ReplyLikeEntity {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "like_code_pk")
+	@Column(name = "reply_like_code_pk")
 	private Integer likeCodePk;
 
 	@Column(name = "user_code_fk")
