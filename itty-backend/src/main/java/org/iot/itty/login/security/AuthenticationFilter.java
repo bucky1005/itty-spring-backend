@@ -33,7 +33,8 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 	private final Environment environment;
 
 	public AuthenticationFilter(AuthenticationManager authenticationManager,
-								LoginService loginService, Environment environment) {
+								LoginService loginService,
+								Environment environment) {
 		super(authenticationManager);
 		this.loginService = loginService;
 		this.environment = environment;
@@ -51,12 +52,11 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 			log.info("로그인 시도. 아이디: " + requestLogin.getUserEmail()
 				+ "비밀번호: " + requestLogin.getUserPassword());
 
-			/* 사용자가 전달한 id, pwd를 사용해 authentication 토큰 생성 */
-			return getAuthenticationManager().authenticate(
-				new UsernamePasswordAuthenticationToken(
-					requestLogin.getUserEmail(), requestLogin.getUserPassword(), new ArrayList<>())
-			);
+			/* 이메일, 비밀번호를 담은 인증 객체(authenticationToken) 생성 */
+			UsernamePasswordAuthenticationToken authenticationToken =
+				new UsernamePasswordAuthenticationToken(requestLogin.getUserEmail(), requestLogin.getUserPassword(), new ArrayList<>());
 
+			return getAuthenticationManager().authenticate(authenticationToken);
 		} catch (IOException e) {
 			throw new InputNotFoundException();
 		}
@@ -72,30 +72,36 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 		String userName = ((User)authResult.getPrincipal()).getUsername();	// 로그인한 유저의 아이디(이메일) 저장
 		log.info("userName: " + userName);
 
+		/* 입력한 email을 가진 유저가 있는지 확인하여 해당 유저 정보를 userDTO에 담아옴 */
 		UserDTO userDetails = loginService.getUserDetailsByUserEmail(userName);
+
+		// String accessToken =
+		/* 토큰 만료시간 계산용 */
+		long now = (new Date()).getTime();
 
 		/* 회원 권한 리스트 */
 		List<String> roles = new ArrayList<>();
 		roles.add("ROLE_ADMIN");
 		roles.add("ROLE_USER");
 
+		/* 유저이메일을 subject로 갖는 클레임 생성, 권한(리스트) 추가 */
 		Claims claims = Jwts.claims().setSubject(userDetails.getUserEmail());
 		claims.put("auth", roles.stream().filter(role -> role.equals("ROLE_USER")).collect(Collectors.toList()));
 
-		/* 이메일을 조회하여 해당 유저의 사용자의 인증(principal) 이름을 반환 */
-		UserDTO userDTO = loginService.searchUserEmail(authResult.getName());
+		AccessToken accessTokenClass = new AccessToken(loginService, environment);
 
-		/* 토큰 생성 */
-		String token = Jwts.builder().setClaims(claims)
-			.setSubject(authResult.getName())
-			.claim("userCodePk", userDTO.getUserCodePk())
-			.claim("userEmail", userDTO.getUserEmail())
-				.setExpiration(new Date(System.currentTimeMillis() +
-					Long.parseLong(environment.getProperty("token.expiration_time"))))
-					.signWith(SignatureAlgorithm.HS512, environment.getProperty("token.secret"))
-						.compact();
-		response.addHeader("token", token);
+		/* 액세스 토큰 생성 */
+		String accessToken = accessTokenClass.createAccessToken(claims, authResult, response, userDetails);
+
+		/* 헤더에 값 추가 */
+		response.addHeader("accessToken", accessToken);
 		response.addHeader("userCodePk", String.valueOf(userDetails.getUserCodePk()));
 		response.addHeader("userEmail", userDetails.getUserEmail());
+
+		// /* 리프레시 토큰 생성 */
+		// String refreshToken = Jwts.builder()
+		// 	.setExpiration(new Date(now + refreshTokenExpTime))
+		// 	.signWith(SignatureAlgorithm.HS512, environment.getProperty("token.secret"))
+		// 	.compact();
 	}
 }
