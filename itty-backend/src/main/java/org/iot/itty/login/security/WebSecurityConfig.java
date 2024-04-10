@@ -3,10 +3,11 @@ package org.iot.itty.login.security;
 import org.iot.itty.login.jwt.JwtFilter;
 import org.iot.itty.login.jwt.JwtUtil;
 import org.iot.itty.login.service.LoginService;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -17,8 +18,6 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
-import jakarta.servlet.Filter;
-
 @Configuration
 @EnableWebSecurity
 public class WebSecurityConfig {
@@ -27,14 +26,19 @@ public class WebSecurityConfig {
 	private final Environment environment;
 	private final BCryptPasswordEncoder bCryptPasswordEncoder;
 	private final JwtUtil jwtUtil;
+	private final RedisTemplate<String, String> redisTemplate;
+	private final long refreshTokenExpTime;
 
-	@Autowired
 	public WebSecurityConfig(LoginService loginService, Environment environment,
-		BCryptPasswordEncoder bCryptPasswordEncoder, JwtUtil jwtUtil) {
+		BCryptPasswordEncoder bCryptPasswordEncoder,
+		JwtUtil jwtUtil, RedisTemplate<String, String> redisTemplate,
+		@Value("${spring.data.redis.expiration_time}") long refreshTokenExpTime) {
 		this.loginService = loginService;
 		this.environment = environment;
 		this.bCryptPasswordEncoder = bCryptPasswordEncoder;
 		this.jwtUtil = jwtUtil;
+		this.redisTemplate = redisTemplate;
+		this.refreshTokenExpTime = refreshTokenExpTime;
 	}
 
 	@Bean
@@ -78,8 +82,6 @@ public class WebSecurityConfig {
 	}
 
 	private AuthenticationFilter getAuthenticationFilter(AuthenticationManager authenticationManager) {
-		return new AuthenticationFilter(authenticationManager, loginService, environment);
+		return new AuthenticationFilter(authenticationManager, loginService, environment, refreshTokenExpTime);
 	}
-
-
 }

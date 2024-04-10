@@ -10,6 +10,7 @@ import org.iot.itty.dto.UserDTO;
 import org.iot.itty.login.service.LoginService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.iot.itty.login.vo.RequestLogin;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -31,13 +32,16 @@ import lombok.extern.slf4j.Slf4j;
 public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 	private final LoginService loginService;
 	private final Environment environment;
+	private final long refreshTokenExpTime;
 
 	public AuthenticationFilter(AuthenticationManager authenticationManager,
 								LoginService loginService,
-								Environment environment) {
+								Environment environment,
+		@Value("${spring.data.redis.expiration_time}") long refreshTokenExpTime) {
 		super(authenticationManager);
 		this.loginService = loginService;
 		this.environment = environment;
+		this.refreshTokenExpTime = refreshTokenExpTime;
 	}
 
 	/* 사용자 인증 시도 시 동작 */
@@ -98,10 +102,10 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 		response.addHeader("userCodePk", String.valueOf(userDetails.getUserCodePk()));
 		response.addHeader("userEmail", userDetails.getUserEmail());
 
-		// /* 리프레시 토큰 생성 */
-		// String refreshToken = Jwts.builder()
-		// 	.setExpiration(new Date(now + refreshTokenExpTime))
-		// 	.signWith(SignatureAlgorithm.HS512, environment.getProperty("token.secret"))
-		// 	.compact();
+		/* 리프레시 토큰 생성 */
+		String refreshToken = Jwts.builder()
+			.setExpiration(new Date(now + refreshTokenExpTime))
+			.signWith(SignatureAlgorithm.HS512, environment.getProperty("token.secret"))
+			.compact();
 	}
 }
