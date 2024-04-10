@@ -11,7 +11,6 @@ import org.modelmapper.convention.MatchingStrategies;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.web.firewall.HttpStatusRequestRejectedHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -19,7 +18,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 
 @RestController
@@ -37,6 +35,7 @@ public class LoginController {
 
 	@GetMapping("/health_check")
 	public String healthCheck() {
+
 		return "check check";
 	}
 
@@ -62,13 +61,13 @@ public class LoginController {
 		return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
 	}
 
-	@PostMapping("/logout")
-	public ResponseEntity<Void> userLogout(HttpServletRequest servletRequest) {
-
-		loginService.userLogout();
-
-		return ResponseEntity.status(HttpStatus.OK).build();
-	}
+	// @PostMapping("/logout")
+	// public ResponseEntity<Void> userLogout(HttpServletRequest servletRequest) {
+	//
+	// 	loginService.userLogout();
+	//
+	// 	return ResponseEntity.status(HttpStatus.OK).build();
+	// }
 
 	@PutMapping("/user/withdrawal")
 	public ResponseEntity<ResponseWithdrawal> userWithdrawal(@RequestBody RequestWithdrawal requestWithdrawal) {

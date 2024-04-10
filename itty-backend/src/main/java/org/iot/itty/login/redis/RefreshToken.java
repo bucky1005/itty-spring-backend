@@ -3,18 +3,21 @@ package org.iot.itty.login.redis;
 import org.springframework.data.redis.core.RedisHash;
 import org.springframework.data.redis.core.index.Indexed;
 
-import jakarta.persistence.Id;
+import org.springframework.data.annotation.Id;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @AllArgsConstructor
+@NoArgsConstructor
 @Getter
-@RedisHash(value = "jwtToken", timeToLive = 60*60*24*3)
+/* Lettuce를 사용하기 위해 redisHash를 작성 */
+@RedisHash(value = "refreshToken", timeToLive = 60*60*24*3)	// value: redis의 key값으로 사용, {value}:{@Id 값}
 public class RefreshToken {
-	@Id
-	private String id;
 
+	@Id
 	private String refreshToken;
+	private String userEmail;
 
 	@Indexed
 	private String accessToken;

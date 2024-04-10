@@ -18,6 +18,6 @@ public class RefreshTokenService {
 	@Transactional
 	public void removeRefreshToken(String accessToken) {
 		refreshTokenRepository.findByAccessToken(accessToken)
-			.ifPresent(refreshToken -> refreshTokenRepository.delete(refreshToken));
+			.ifPresent(refreshToken -> refreshTokenRepository.delete(null));
 	}
 }

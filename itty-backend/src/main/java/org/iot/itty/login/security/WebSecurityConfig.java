@@ -27,17 +27,20 @@ public class WebSecurityConfig {
 	private final BCryptPasswordEncoder bCryptPasswordEncoder;
 	private final JwtUtil jwtUtil;
 	private final RedisTemplate<String, String> redisTemplate;
+	private final long accessTokenExpTime;
 	private final long refreshTokenExpTime;
 
 	public WebSecurityConfig(LoginService loginService, Environment environment,
 		BCryptPasswordEncoder bCryptPasswordEncoder,
 		JwtUtil jwtUtil, RedisTemplate<String, String> redisTemplate,
+		@Value("${token.expiration_time}") long accessTokenExpTime,
 		@Value("${spring.data.redis.expiration_time}") long refreshTokenExpTime) {
 		this.loginService = loginService;
 		this.environment = environment;
 		this.bCryptPasswordEncoder = bCryptPasswordEncoder;
 		this.jwtUtil = jwtUtil;
 		this.redisTemplate = redisTemplate;
+		this.accessTokenExpTime = accessTokenExpTime;
 		this.refreshTokenExpTime = refreshTokenExpTime;
 	}
 
@@ -82,6 +85,6 @@ public class WebSecurityConfig {
 	}
 
 	private AuthenticationFilter getAuthenticationFilter(AuthenticationManager authenticationManager) {
-		return new AuthenticationFilter(authenticationManager, loginService, environment, refreshTokenExpTime);
+		return new AuthenticationFilter(authenticationManager, loginService, environment, jwtUtil, accessTokenExpTime, refreshTokenExpTime, redisTemplate);
 	}
 }

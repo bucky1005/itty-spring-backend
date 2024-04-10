@@ -7,11 +7,14 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.iot.itty.dto.UserDTO;
+import org.iot.itty.login.jwt.JwtUtil;
 import org.iot.itty.login.service.LoginService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.iot.itty.login.vo.RequestLogin;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
+import org.springframework.data.redis.core.ListOperations;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -32,16 +35,25 @@ import lombok.extern.slf4j.Slf4j;
 public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 	private final LoginService loginService;
 	private final Environment environment;
+	private final JwtUtil jwtUtil;
+	private final long accessTokenExpTime;
 	private final long refreshTokenExpTime;
+	private final RedisTemplate<String, String> redisTemplate;
 
 	public AuthenticationFilter(AuthenticationManager authenticationManager,
 								LoginService loginService,
 								Environment environment,
-		@Value("${spring.data.redis.expiration_time}") long refreshTokenExpTime) {
+								JwtUtil jwtUtil,
+		@Value("${token.expiration_time}") long accessTokenExpTime,
+		@Value("${spring.data.redis.expiration_time}") long refreshTokenExpTime,
+		RedisTemplate<String, String> redisTemplate) {
 		super(authenticationManager);
 		this.loginService = loginService;
 		this.environment = environment;
+		this.jwtUtil = jwtUtil;
+		this.accessTokenExpTime = accessTokenExpTime;
 		this.refreshTokenExpTime = refreshTokenExpTime;
+		this.redisTemplate = redisTemplate;
 	}
 
 	/* 사용자 인증 시도 시 동작 */
@@ -79,7 +91,6 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 		/* 입력한 email을 가진 유저가 있는지 확인하여 해당 유저 정보를 userDTO에 담아옴 */
 		UserDTO userDetails = loginService.getUserDetailsByUserEmail(userName);
 
-		// String accessToken =
 		/* 토큰 만료시간 계산용 */
 		long now = (new Date()).getTime();
 
@@ -92,20 +103,23 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 		Claims claims = Jwts.claims().setSubject(userDetails.getUserEmail());
 		claims.put("auth", roles.stream().filter(role -> role.equals("ROLE_USER")).collect(Collectors.toList()));
 
-		AccessToken accessTokenClass = new AccessToken(loginService, environment);
+		TokenGenerator tokenGeneratorClass = new TokenGenerator(loginService, environment, jwtUtil);
 
 		/* 액세스 토큰 생성 */
-		String accessToken = accessTokenClass.createAccessToken(claims, authResult, response, userDetails);
-
-		/* 헤더에 값 추가 */
-		response.addHeader("accessToken", accessToken);
-		response.addHeader("userCodePk", String.valueOf(userDetails.getUserCodePk()));
-		response.addHeader("userEmail", userDetails.getUserEmail());
+		String accessToken = tokenGeneratorClass.createAccessToken(claims, userDetails, authResult, accessTokenExpTime);
 
 		/* 리프레시 토큰 생성 */
-		String refreshToken = Jwts.builder()
-			.setExpiration(new Date(now + refreshTokenExpTime))
-			.signWith(SignatureAlgorithm.HS512, environment.getProperty("token.secret"))
-			.compact();
+		String refreshToken = tokenGeneratorClass.createRefreshToken(userDetails, refreshTokenExpTime, environment);
+
+		/* 헤더에 값 추가 */
+		response.addHeader("Access-Token", accessToken);
+		response.addHeader("User-Code-Pk", String.valueOf(userDetails.getUserCodePk()));
+		response.addHeader("User-Email", userDetails.getUserEmail());
+		response.addHeader("Refresh-Token", refreshToken);
+
+		/* 리프레시 토큰 Redis에 저장 */
+		ListOperations<String, String> listOperations = redisTemplate.opsForList();
+		listOperations.leftPush(String.valueOf(userDetails.getUserCodePk()), refreshToken);
+
 	}
 }
