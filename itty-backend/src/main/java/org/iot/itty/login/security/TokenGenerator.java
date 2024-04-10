@@ -80,7 +80,7 @@ public class TokenGenerator {
 	}
 
 	/* 리프레시 토큰으로 액세스 토큰 재발급 */
-	public ResponseToken issueAccessToken(HttpServletRequest request){
+	public ResponseToken issueAccessToken(HttpServletRequest request, UserDTO userDetails){
 
 		/* 요청 시 헤더에 담겨온 토큰 */
 		String accessToken = request.getHeader("Access-Token");
@@ -103,13 +103,15 @@ public class TokenGenerator {
 				/* 클레임 정보에서 필요한 정보(userEmail) 가져오기 */
 				String userEmail = claims.getSubject();
 
-				// String accessToken = createAccessToken(userDetails, )
+				// String accessToken = createAccessToken(userDetails, auth)
+
 			}
 		}
-		return null;
 		// return ResponseToken.builder()
 		// 	.ACCESS_TOKEN(accessToken)
 		// 	.REFRESH_TOKEN(refreshToken)
 		// 	.build();
+
+		return null;
 	}
 }
