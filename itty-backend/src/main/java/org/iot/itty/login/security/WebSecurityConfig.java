@@ -68,14 +68,14 @@ public class WebSecurityConfig {
 
 		// 인가(Authorization)
 		http.authorizeHttpRequests((auth) -> auth
-			.requestMatchers("/login", "/", "regist").permitAll()
+				.requestMatchers("/login", "/", "regist").permitAll()
 
-			// 전체 권한 설정(추후 수정)
-			.requestMatchers(new AntPathRequestMatcher("/**")).permitAll()
+				// 전체 권한 설정(추후 수정)
+				.requestMatchers(new AntPathRequestMatcher("/**")).permitAll()
 				// .requestMatchers(new AntPathRequestMatcher("/test")).hasRole("USER")
 
-			// 권한 부여 설정을 하지 않은 요청은 로그인된 사용자에게만 허용
-			.anyRequest().authenticated())
+				// 권한 부여 설정을 하지 않은 요청은 로그인된 사용자에게만 허용
+				.anyRequest().authenticated())
 			.authenticationManager(authenticationManager)
 
 			// 세션 설정
@@ -84,13 +84,26 @@ public class WebSecurityConfig {
 				.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
 		http.addFilter(getAuthenticationFilter(authenticationManager));
-		http.addFilterBefore(new JwtFilter(loginService, jwtUtil, tokenRepository), UsernamePasswordAuthenticationFilter.class);
+		http.addFilterBefore(new JwtFilter(loginService, jwtUtil, tokenRepository),
+			UsernamePasswordAuthenticationFilter.class);
+
+		/* SecurityFilterChain에 로그아웃 핸들러 등록 */
+		http.logout(httpSecurityLogoutConfigurer ->
+			httpSecurityLogoutConfigurer
+				.addLogoutHandler(new UserLogoutHandler(jwtUtil))
+				.logoutSuccessHandler(new UserLogoutHandler(jwtUtil))
+				.logoutUrl("/user/logout")
+				.invalidateHttpSession(true)
+				.permitAll()
+		);
+
 		// 받아온 매개변수 http를 build 타입으로 반환
 		return http.build();
 	}
 
 	private AuthenticationFilter getAuthenticationFilter(AuthenticationManager authenticationManager) {
-		return new AuthenticationFilter(authenticationManager, loginService, environment, jwtUtil, accessTokenExpTime, refreshTokenExpTime,
+		return new AuthenticationFilter(authenticationManager, loginService, environment, jwtUtil, accessTokenExpTime,
+			refreshTokenExpTime,
 			tokenRepository, redisTemplate);
 	}
 }

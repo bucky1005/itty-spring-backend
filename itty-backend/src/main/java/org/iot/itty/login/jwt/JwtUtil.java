@@ -1,5 +1,7 @@
 package org.iot.itty.login.jwt;
 
+import org.iot.itty.login.redis.BlackToken;
+import org.iot.itty.login.redis.BlackTokenRepository;
 import org.iot.itty.login.redis.TokenRepository;
 import org.iot.itty.login.service.LoginService;
 import io.jsonwebtoken.*;
@@ -8,6 +10,7 @@ import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
 
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -18,9 +21,12 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 import java.security.Key;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /* 받아온 토큰을 분해 */
@@ -32,17 +38,20 @@ public class JwtUtil {
 	private final LoginService loginService;
 	private final long accessTokenExpTime;
 	private final TokenRepository tokenRepository;
+	private final BlackTokenRepository blackTokenRepository;
 
 	public JwtUtil(
 		@Value("${token.secret}") String secretKey,
 		@Value("${token.expiration_time}") long accessTokenExpTime,
 		LoginService loginService,
-		TokenRepository tokenRepository) {
+		TokenRepository tokenRepository,
+		BlackTokenRepository blackTokenRepository) {
 		byte[] keyBytes = Decoders.BASE64.decode(secretKey);
 		this.key = Keys.hmacShaKeyFor(keyBytes);
 		this.loginService = loginService;
 		this.accessTokenExpTime = accessTokenExpTime;
 		this.tokenRepository = tokenRepository;
+		this.blackTokenRepository = blackTokenRepository;
 	}
 
 	/* AccessToken에서 인증 객체(Authentication) 추출 */
@@ -158,5 +167,44 @@ public class JwtUtil {
 			return isTrue;
 		}
 		return isTrue;
+	}
+
+	/* 로그아웃 시 액세스 토큰 블랙리스트에 추가 */
+	@Transactional
+	public void destroyToken(HttpServletRequest request) {
+
+		String accessToken = validAccessTokenHeader(request);
+		System.out.println("검증 완료 된 accessToken: " + accessToken);
+
+		String userEmail = getUserEmail(accessToken);
+
+		long tokenExpiration = getExpiration(accessToken) * 60 * 1000;
+		System.out.println("token 만료 시간(Millis): " + tokenExpiration);
+
+		long currentTimeMillis = System.currentTimeMillis();
+		System.out.println("현재 시간(Millis): " + currentTimeMillis);
+
+		long expiration = (tokenExpiration - currentTimeMillis) / (1000 * 60);	//분 단위로 저장
+		System.out.println("남은 유효 시간(Minute): " + expiration);
+
+		tokenRepository.deleteById(accessToken);
+
+		BlackToken blackToken = new BlackToken();
+		blackToken.setAccessToken(accessToken);
+		blackToken.setUserEmail(userEmail);
+		blackToken.setExpriation(expiration);
+
+		blackTokenRepository.save(blackToken);
+	}
+
+	@Transactional
+	public Optional<?> verifyAccessToken(HttpServletRequest request) {
+		String accessToken = validAccessTokenHeader(request);
+		String userEmail = getUserEmail(accessToken);
+
+		Optional<BlackToken> blackToken = blackTokenRepository.findById(accessToken);
+
+		return blackToken.filter(black -> black.getAccessToken().equals(accessToken))
+			.map(black -> Optional.empty()).orElse(Optional.of(blackToken));
 	}
 }

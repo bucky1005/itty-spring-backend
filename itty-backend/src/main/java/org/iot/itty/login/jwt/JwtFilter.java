@@ -5,14 +5,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.iot.itty.login.exception.BlackToken;
-import org.iot.itty.login.exception.NotExistingToken;
-import org.iot.itty.login.exception.NotValidToken;
 import org.iot.itty.login.redis.TokenRepository;
 import org.iot.itty.login.service.LoginService;
-import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.http.HttpStatus;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -53,7 +47,7 @@ public class JwtFilter extends OncePerRequestFilter {
 
 		filterChain.doFilter(request, response);
 
-		// 토큰 없이 들어오는 모든 요청을 처리하기 위해 주석 처리
+		// 토큰 없이 들어오는 요청을 모두 처리하기 위해 임시로 주석 처리
 		// try {
 		// 	// if(!StringUtils.hasText(accessToken))
 		// 	// 	throw new NotExistingToken("토큰이 없습니다.");
