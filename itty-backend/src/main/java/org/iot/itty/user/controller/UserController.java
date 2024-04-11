@@ -6,6 +6,7 @@ import org.iot.itty.article.service.ArticleService;
 import org.iot.itty.article.service.LikeService;
 import org.iot.itty.article.service.ReplyService;
 import org.iot.itty.article.vo.ResponseSelectAllArticleByUserCodeFk;
+import org.iot.itty.article.vo.ResponseSelectAllArticleLikedByUserCodeFk;
 import org.iot.itty.article.vo.ResponseSelectAllReplyByUserCodeFk;
 import org.iot.itty.article.vo.ResponseSelectAllReplyLikedByUserCodeFk;
 import org.iot.itty.dto.ArticleDTO;
@@ -71,6 +72,13 @@ public class UserController {
 				.map(ReplyDTO -> modelMapper.map(ReplyDTO, ResponseSelectAllReplyByUserCodeFk.class))
 				.toList();
 
+		/* 해당 회원이 좋아요 누른 게시글 리스트 가져오기 */
+		List<ResponseSelectAllArticleLikedByUserCodeFk> responseSelectAllArticleLikedByUserCodeFkList =
+			likeService.selectAllArticleLikedbyUserCodeFk(userCodePk)
+				.stream()
+				.map(ArticleDTO -> modelMapper.map(ArticleDTO, ResponseSelectAllArticleLikedByUserCodeFk.class))
+				.toList();
+
 		/* 해당 회원이 좋아요 누른 댓글 리스트 가져오기 */
 		List<ResponseSelectAllReplyLikedByUserCodeFk> responseSelectAllReplyLikedByUserCodeFkList =
 			likeService.selectAllLikeByUserCodeFk(userCodePk)
@@ -80,6 +88,7 @@ public class UserController {
 
 		userDTO.setArticleDTOList(responseSelectAllArticleByUserCodeFkList);
 		userDTO.setReplyDTOList(responseSelectAllReplyByUserCodeFkList);
+		userDTO.setLikedArticleDTOList(responseSelectAllArticleLikedByUserCodeFkList);
 		userDTO.setLikedReplyDTOList(responseSelectAllReplyLikedByUserCodeFkList);
 		return ResponseEntity.status(HttpStatus.OK).body(modelMapper.map(userDTO, ResponseSelectUserByUserCodePk.class));
 	}
