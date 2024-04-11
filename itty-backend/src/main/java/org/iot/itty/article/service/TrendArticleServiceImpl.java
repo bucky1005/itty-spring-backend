@@ -45,7 +45,6 @@ public class TrendArticleServiceImpl implements TrendArticleService{
 	}
 
 	@Transactional
-	@PostConstruct
 	@Override
 	public List<TrendArticleDTO> addTrendArticle() throws IOException, ParseException {
 		List<TrendArticleEntity> trendArticleEntityList = new ArrayList<>();
@@ -69,9 +68,9 @@ public class TrendArticleServiceImpl implements TrendArticleService{
 				.trendArticleCreatedDate(formatter.parse(date + time))
 				.build();
 			// System.out.println(trendArticleEntity.getTrendArticleUrl());
-			TrendArticleEntity isExist = trendArticleRepository.findByTrendArticleUrl(trendArticleEntity.getTrendArticleUrl());
+			boolean isExist = trendArticleRepository.existsByTrendArticleUrl(trendArticleEntity.getTrendArticleUrl());
 
-			if (isExist == null) {
+			if (!isExist) {
 				trendArticleEntityList.add(trendArticleRepository.save(trendArticleEntity));
 			}
 		}

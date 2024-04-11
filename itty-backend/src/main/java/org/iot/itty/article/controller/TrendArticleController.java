@@ -50,7 +50,7 @@ public class TrendArticleController {
 		if (trendArticleDTOList != null) {
 			result.put("message", trendArticleDTOList.size() + " trend article(s) added successfully.");
 		} else {
-			result.put("message", "Failed to add trend articles.");
+			result.put("message", "There is no new trend article to add.");
 		}
 		return ResponseEntity.status(HttpStatus.CREATED).body(result);
 	}
