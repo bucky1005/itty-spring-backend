@@ -7,4 +7,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface ArticleLikeRepository extends JpaRepository<ArticleLikeEntity, Integer> {
 	List<ArticleLikeEntity> findAllByUserCodeFk(int userCodeFk);
+
+	ArticleLikeEntity findByArticleCodeFkAndUserCodeFk(int articleCode, int userCode);
 }

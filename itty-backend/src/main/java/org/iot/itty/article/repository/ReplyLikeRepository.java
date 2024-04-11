@@ -7,4 +7,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface ReplyLikeRepository extends JpaRepository<ReplyLikeEntity, Integer> {
 	List<ReplyLikeEntity> findAllByUserCodeFk(int userCodeFk);
+
+	ReplyLikeEntity findByReplyCodeFkAndUserCodeFk(int replyCode, int userCode);
 }

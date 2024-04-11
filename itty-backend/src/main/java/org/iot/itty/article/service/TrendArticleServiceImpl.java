@@ -69,9 +69,9 @@ public class TrendArticleServiceImpl implements TrendArticleService{
 				.trendArticleCreatedDate(formatter.parse(date + time))
 				.build();
 			// System.out.println(trendArticleEntity.getTrendArticleUrl());
-			boolean isExist = trendArticleRepository.existsByTrendArticleUrl(trendArticleEntity.getTrendArticleUrl());
+			TrendArticleEntity isExist = trendArticleRepository.findByTrendArticleUrl(trendArticleEntity.getTrendArticleUrl());
 
-			if (!isExist) {
+			if (isExist == null) {
 				trendArticleEntityList.add(trendArticleRepository.save(trendArticleEntity));
 			}
 		}

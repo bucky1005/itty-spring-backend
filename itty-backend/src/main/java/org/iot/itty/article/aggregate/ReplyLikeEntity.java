@@ -7,6 +7,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -26,4 +27,11 @@ public class ReplyLikeEntity {
 
 	@Column(name = "reply_code_fk")
 	private Integer replyCodeFk;
+
+	@Builder
+	public ReplyLikeEntity(Integer likeCodePk, Integer userCodeFk, Integer replyCodeFk) {
+		this.likeCodePk = likeCodePk;
+		this.userCodeFk = userCodeFk;
+		this.replyCodeFk = replyCodeFk;
+	}
 }
