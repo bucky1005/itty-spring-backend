@@ -87,7 +87,7 @@ public class JwtFilter extends OncePerRequestFilter {
 	private void validBlackToken(String accessToken) {
 		RedisTemplate redisTemplate = new RedisTemplate<String, String>();
 
-		//Redis에 있는 엑세스 토큰인 경우 로그아웃 처리된 엑세스 토큰임.
+		// Redis에 있는 엑세스 토큰인 경우 로그아웃 처리된 엑세스 토큰임.
 		String blackToken = String.valueOf(redisTemplate.opsForValue().get(accessToken));
 		if(StringUtils.hasText(blackToken))
 			throw new BlackToken("로그아웃 처리된 엑세스 토큰입니다.");

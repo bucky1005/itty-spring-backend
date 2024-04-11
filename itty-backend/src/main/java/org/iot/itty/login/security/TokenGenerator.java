@@ -83,7 +83,7 @@ public class TokenGenerator {
 	public ResponseToken issueAccessToken(HttpServletRequest request, UserDTO userDetails){
 
 		/* 요청 시 헤더에 담겨온 토큰 */
-		String accessToken = request.getHeader("Access-Token");
+		String accessToken = request.getHeader("Authorization");
 		String refreshToken = request.getHeader("Refresh-Token");
 
 		if (jwtUtil.validateTokenExpired(accessToken)) {	// 액세스 토큰 만료

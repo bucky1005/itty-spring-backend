@@ -17,5 +17,5 @@ public interface LoginService extends UserDetailsService {
 
 	boolean userWithdrawal(UserDTO userDTO);
 
-	// void userLogout(String auth);
+	void userLogout(String accessToken);
 }

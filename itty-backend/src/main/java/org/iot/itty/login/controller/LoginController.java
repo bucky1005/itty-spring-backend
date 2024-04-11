@@ -1,6 +1,8 @@
 package org.iot.itty.login.controller;
 
 import org.iot.itty.dto.UserDTO;
+import org.iot.itty.login.jwt.JwtUtil;
+import org.iot.itty.login.redis.RedisConfig;
 import org.iot.itty.login.service.LoginService;
 import org.iot.itty.login.vo.RequestRegist;
 import org.iot.itty.login.vo.RequestWithdrawal;
@@ -15,6 +17,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -26,11 +29,14 @@ import lombok.extern.slf4j.Slf4j;
 public class LoginController {
 	private final LoginService loginService;
 	private final ModelMapper modelMapper;
+	private final JwtUtil jwtUtil;
 
 	@Autowired
-	public LoginController(LoginService loginService, ModelMapper modelMapper) {
+	public LoginController(LoginService loginService, ModelMapper modelMapper,
+		JwtUtil jwtUtil) {
 		this.loginService = loginService;
 		this.modelMapper = modelMapper;
+		this.jwtUtil = jwtUtil;
 	}
 
 	@GetMapping("/health_check")
@@ -53,6 +59,18 @@ public class LoginController {
 		responseRegist.setMessage("회원 가입 성공");
 
 		return ResponseEntity.status(HttpStatus.CREATED).body(responseRegist);
+	}
+
+	/* 로그아웃 */
+	@PostMapping("/user/logout")
+	public ResponseEntity<Void> logout(String accessToken) {
+
+		System.out.println("logout 요청");
+		// System.out.println("accessToken" + accessToken);
+		// String userEmail = jwtUtil.getUserEmail(accessToken);
+
+		// System.out.println("userEmail: " + userEmail);
+		return null;
 	}
 
 	/* 토큰 검증 실패 시 실행되는 api */

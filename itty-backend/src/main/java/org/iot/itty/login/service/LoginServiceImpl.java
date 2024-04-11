@@ -1,9 +1,12 @@
 package org.iot.itty.login.service;
 
 import java.util.ArrayList;
+import java.util.concurrent.TimeUnit;
 
+import org.iot.itty.login.jwt.JwtUtil;
 import org.iot.itty.dto.UserDTO;
 import org.iot.itty.login.redis.RedisConfig;
+import org.iot.itty.login.redis.RefreshToken;
 import org.iot.itty.login.redis.RefreshTokenRepository;
 import org.iot.itty.user.aggregate.UserEntity;
 import org.iot.itty.user.repository.UserRepository;
@@ -70,23 +73,23 @@ public class LoginServiceImpl implements LoginService {
 	}
 
 	/* 로그아웃 */
-	// @Override
-	// public void userLogout(String accessToken) {
-	// 	// Token에서 로그인된 사용자의 Token을 가져옴
-	// 	String userEmail = jwtUtil.getUserEmail(accessToken);
-	// 	ModelMapper mapper = new ModelMapper();
-	//
-	// 	RefreshToken refreshToken = mapper.map(userEmail, RefreshToken.class);
-	//
-	// 	// 액세스 토큰의 유효시간
-	// 	Long expiration = jwtUtil.getExpiration(accessToken);
-	//
-	// 	// Redis Cache 저장
-	// 	redisTemplate.opsForValue().set(accessToken, "userLogout", expiration, TimeUnit.MILLISECONDS);
-	//
-	// 	// refreshToken 삭제
-	// 	refreshTokenRepository.delete(refreshToken);
-	// }
+	@Override
+	public void userLogout(String accessToken) {
+		// Token에서 로그인된 사용자의 Token을 가져옴
+
+		ModelMapper mapper = new ModelMapper();
+
+		// RefreshToken refreshToken = mapper.map(userEmail, RefreshToken.class);
+
+		// 액세스 토큰의 유효시간
+		// Long expiration = jwtUtil.getExpiration(accessToken);
+
+		// Redis Cache 저장
+		// redisTemplate.opsForValue().set(accessToken, "logout", expiration, TimeUnit.MILLISECONDS);
+
+		// refreshToken 삭제
+		// refreshTokenRepository.delete(refreshToken);
+	}
 
 	/* 회원 탈퇴 */
 	@Override
