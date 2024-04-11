@@ -7,6 +7,7 @@ import java.util.List;
 import org.iot.itty.login.exception.BlackToken;
 import org.iot.itty.login.exception.NotExistingToken;
 import org.iot.itty.login.exception.NotValidToken;
+import org.iot.itty.login.redis.TokenRepository;
 import org.iot.itty.login.service.LoginService;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpStatus;
@@ -27,10 +28,12 @@ public class JwtFilter extends OncePerRequestFilter {
 
 	private final LoginService loginService;
 	private final JwtUtil jwtUtil;
+	private final TokenRepository tokenRepository;
 
-	public JwtFilter(LoginService loginService, JwtUtil jwtUtil) {
+	public JwtFilter(LoginService loginService, JwtUtil jwtUtil, TokenRepository tokenRepository) {
 		this.loginService = loginService;
 		this.jwtUtil = jwtUtil;
+		this.tokenRepository = tokenRepository;
 	}
 
 	/* UsernamePasswordAuthentication보다 먼저 동작하는 필터 생성 */
@@ -47,8 +50,7 @@ public class JwtFilter extends OncePerRequestFilter {
 			filterChain.doFilter(request, response);
 			return;
 		}
-		try {
-			// 이거 왜하는거
+		try {	// 현재는 토큰이 없어도 모든 api 요청을 처리할 수 있도록 하기 위해 주석 처리
 			// if(!StringUtils.hasText(accessToken))
 			// 	throw new NotExistingToken("토큰이 없습니다.");
 
@@ -56,7 +58,7 @@ public class JwtFilter extends OncePerRequestFilter {
 			validBlackToken(accessToken);
 
 			// Jwt 토큰 만료기간 검증(getAuthentication에서 처리)
-			// jwtUtil.validateTokenExpired(accessToken);
+			jwtUtil.validateTokenExpired(accessToken);
 
 			// accessToken에서 인증 객체(Authentication) 추출
 			Authentication authentication = jwtUtil.getAuthentication(accessToken);
@@ -85,10 +87,9 @@ public class JwtFilter extends OncePerRequestFilter {
 
 	/* 로그아웃 토큰 확인 */
 	private void validBlackToken(String accessToken) {
-		RedisTemplate redisTemplate = new RedisTemplate<String, String>();
 
 		// Redis에 있는 엑세스 토큰인 경우 로그아웃 처리된 엑세스 토큰임.
-		String blackToken = String.valueOf(redisTemplate.opsForValue().get(accessToken));
+		String blackToken = String.valueOf(tokenRepository.findByAccessToken(accessToken));
 		if(StringUtils.hasText(blackToken))
 			throw new BlackToken("로그아웃 처리된 엑세스 토큰입니다.");
 	}

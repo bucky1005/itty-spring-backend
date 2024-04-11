@@ -1,6 +1,6 @@
 package org.iot.itty.login.jwt;
 
-import org.iot.itty.login.exception.TokenExpiredException;
+import org.iot.itty.login.redis.TokenRepository;
 import org.iot.itty.login.service.LoginService;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
@@ -31,15 +31,18 @@ public class JwtUtil {
 	private final Key key;
 	private final LoginService loginService;
 	private final long accessTokenExpTime;
+	private final TokenRepository tokenRepository;
 
 	public JwtUtil(
 		@Value("${token.secret}") String secretKey,
 		@Value("${token.expiration_time}") long accessTokenExpTime,
-		LoginService loginService) {
+		LoginService loginService,
+		TokenRepository tokenRepository) {
 		byte[] keyBytes = Decoders.BASE64.decode(secretKey);
 		this.key = Keys.hmacShaKeyFor(keyBytes);
 		this.loginService = loginService;
 		this.accessTokenExpTime = accessTokenExpTime;
+		this.tokenRepository = tokenRepository;
 	}
 
 	/* AccessToken에서 인증 객체(Authentication) 추출 */
@@ -77,24 +80,30 @@ public class JwtUtil {
 		}
 	}
 
-	/* 토큰 유효성 검증(true/false) */
+	/* 액세스 토큰 유효성 검증(true/false) */
 	public boolean validateToken(String token) {
-		try {
+		// try {
+		// 	Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
+		// 	return true;
+		// } catch (io.jsonwebtoken.security.SecurityException | MalformedJwtException e) {
+		// 	log.info("Invalid JWT Token {}", e);
+		// } catch (ExpiredJwtException e) {
+		// 	log.info("expired JWT Toekn {}", e);
+		// } catch (UnsupportedJwtException e) {
+		// 	log.info("Unsupported JWT Token {}", e);
+		// } catch (IllegalArgumentException e) {
+		// 	log.info("JWT claims strig si empty {}", e);
+		// }
+		// return false;
+
+		if(token != null) {
 			Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
-			return true;
-		} catch (io.jsonwebtoken.security.SecurityException | MalformedJwtException e) {
-			log.info("Invalid JWT Token {}", e);
-		} catch (ExpiredJwtException e) {
-			log.info("expired JWT Toekn {}", e);
-		} catch (UnsupportedJwtException e) {
-			log.info("Unsupported JWT Token {}", e);
-		} catch (IllegalArgumentException e) {
-			log.info("JWT claims strig si empty {}", e);
+				return true;
 		}
 		return false;
 	}
 
-	/* 토큰 유효성 검증 후 토큰 반환 */
+	/* 액세스 토큰 유효성 검증 후 토큰 반환 */
 	public String validAccessTokenHeader(HttpServletRequest request) {
 
 		// Header에서 Authorization 추출
@@ -133,5 +142,21 @@ public class JwtUtil {
 			return false;
 
 		return true;	// 토큰이 유효한 경우
+	}
+
+	/* 리프레시 토큰 유효성 검증 */
+	public boolean validateRefreshToken(String refreshToken) {
+
+		boolean isTrue = true;
+		String storedRefreshToken =
+			tokenRepository.findById(refreshToken).get().toString();
+
+		System.out.println("storedRefreshToken: " + storedRefreshToken);
+
+		if (storedRefreshToken == null) {
+			isTrue = false;
+			return isTrue;
+		}
+		return isTrue;
 	}
 }

@@ -9,12 +9,13 @@ import java.util.stream.Collectors;
 import org.iot.itty.dto.UserDTO;
 import org.iot.itty.login.exception.InputNotFoundException;
 import org.iot.itty.login.jwt.JwtUtil;
+import org.iot.itty.login.redis.RefreshToken;
+import org.iot.itty.login.redis.TokenRepository;
 import org.iot.itty.login.service.LoginService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.iot.itty.login.vo.RequestLogin;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
-import org.springframework.data.redis.core.ListOperations;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -38,6 +39,7 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 	private final JwtUtil jwtUtil;
 	private final long accessTokenExpTime;
 	private final long refreshTokenExpTime;
+	private final TokenRepository tokenRepository;
 	private final RedisTemplate<String, String> redisTemplate;
 
 	public AuthenticationFilter(AuthenticationManager authenticationManager,
@@ -46,6 +48,7 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 								JwtUtil jwtUtil,
 		@Value("${token.expiration_time}") long accessTokenExpTime,
 		@Value("${spring.data.redis.expiration_time}") long refreshTokenExpTime,
+		TokenRepository tokenRepository,
 		RedisTemplate<String, String> redisTemplate) {
 		super(authenticationManager);
 		this.loginService = loginService;
@@ -53,6 +56,7 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 		this.jwtUtil = jwtUtil;
 		this.accessTokenExpTime = accessTokenExpTime;
 		this.refreshTokenExpTime = refreshTokenExpTime;
+		this.tokenRepository = tokenRepository;
 		this.redisTemplate = redisTemplate;
 	}
 
@@ -117,9 +121,12 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 		response.addHeader("User-Email", userDetails.getUserEmail());
 		response.addHeader("Refresh-Token", refreshToken);
 
-		/* 리프레시 토큰 Redis에 저장 */
-		ListOperations<String, String> listOperations = redisTemplate.opsForList();
-		listOperations.leftPush(String.valueOf(userDetails.getUserCodePk()), refreshToken);
+		/* 리프레시 토큰 RedisRepository에 저장 */
+		RefreshToken newRefreshToken = new RefreshToken(refreshToken, userDetails.getUserEmail(), accessToken);
+		tokenRepository.save(newRefreshToken);
 
+		/* RedisTemplate을 사용하여 저장하는 방식 */
+		// ListOperations<String, String> listOperations = redisTemplate.opsForList();
+		// listOperations.leftPush(String.valueOf(userDetails.getUserEmail()), refreshToken);
 	}
 }

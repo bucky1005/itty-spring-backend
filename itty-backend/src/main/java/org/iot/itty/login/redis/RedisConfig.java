@@ -11,6 +11,7 @@ import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.repository.configuration.EnableRedisRepositories;
 import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.RedisSerializationContext;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
@@ -18,6 +19,7 @@ import org.springframework.data.redis.serializer.StringRedisSerializer;
 import jakarta.annotation.PostConstruct;
 
 @Configuration
+@EnableRedisRepositories
 public class RedisConfig {
 
 	@Value("${spring.data.redis.host}")
@@ -35,16 +37,10 @@ public class RedisConfig {
 
 	// Redis 작업을 수행하기 위해 RedisTemplate 객체를 생성하여 반환
 	@Bean
-	public RedisTemplate<String, Object> redisTemplate() {
-		/* accessToken 만료 시 refreshToken을 받아와 발급하기 위해 redisTemplate 사용 */
-		/* redisTemplate을 통해 set, get, delete 사용 가능 */
-		RedisTemplate<String, Object> redisTemplate = new RedisTemplate<>();
+	public RedisTemplate<?, ?> redisTemplate(RedisConnectionFactory redisConnectionFactory) {
+		RedisTemplate<String, String> redisTemplate = new RedisTemplate<>();
 
-		/* redis-cli를 통해 조회 시 알아볼 수 있는 형태로 포맷팅 */
-		redisTemplate.setConnectionFactory(redisConnectionFactory());
-		redisTemplate.setKeySerializer(new StringRedisSerializer());
-		redisTemplate.setValueSerializer(new StringRedisSerializer());
-
+		redisTemplate.setConnectionFactory(redisConnectionFactory);
 		return redisTemplate;
 	}
 

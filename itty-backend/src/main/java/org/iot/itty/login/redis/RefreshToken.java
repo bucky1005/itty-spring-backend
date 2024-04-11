@@ -12,14 +12,12 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Getter
 /* Lettuce를 사용하기 위해 redisHash를 작성 */
-@RedisHash(value = "refreshToken", timeToLive = 60*60*24*3)	// value: redis의 key값으로 사용, {value}:{@Id 값}
+@RedisHash(value = "refreshToken")	// value: redis의 key값으로 사용, {value}:{@Id 값}
 public class RefreshToken {
 
 	@Id
 	private String refreshToken;
 	private String userEmail;
-
-	@Indexed
 	private String accessToken;
 
 }

@@ -1,13 +1,10 @@
 package org.iot.itty.login.service;
 
 import java.util.ArrayList;
-import java.util.concurrent.TimeUnit;
 
-import org.iot.itty.login.jwt.JwtUtil;
 import org.iot.itty.dto.UserDTO;
 import org.iot.itty.login.redis.RedisConfig;
-import org.iot.itty.login.redis.RefreshToken;
-import org.iot.itty.login.redis.RefreshTokenRepository;
+import org.iot.itty.login.redis.TokenRepository;
 import org.iot.itty.user.aggregate.UserEntity;
 import org.iot.itty.user.repository.UserRepository;
 import org.modelmapper.ModelMapper;
@@ -28,16 +25,16 @@ public class LoginServiceImpl implements LoginService {
 	public final BCryptPasswordEncoder bCryptPasswordEncoder;
 	public final RedisConfig redisConfig;
 	public final RedisTemplate redisTemplate;
-	public final RefreshTokenRepository refreshTokenRepository;
+	public final TokenRepository tokenRepository;
 
 	public LoginServiceImpl(UserRepository userRepository, BCryptPasswordEncoder bCryptPasswordEncoder,
 		RedisConfig redisConfig, RedisTemplate redisTemplate,
-		RefreshTokenRepository refreshTokenRepository) {
+		TokenRepository tokenRepository) {
 		this.userRepository = userRepository;
 		this.bCryptPasswordEncoder = bCryptPasswordEncoder;
 		this.redisConfig = redisConfig;
 		this.redisTemplate = redisTemplate;
-		this.refreshTokenRepository = refreshTokenRepository;
+		this.tokenRepository = tokenRepository;
 	}
 
 	/* 회원 가입 */

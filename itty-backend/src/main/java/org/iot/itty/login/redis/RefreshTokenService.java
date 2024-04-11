@@ -8,16 +8,16 @@ import lombok.RequiredArgsConstructor;
 @Service
 @RequiredArgsConstructor
 public class RefreshTokenService {
-	private final RefreshTokenRepository refreshTokenRepository;
+	private final TokenRepository tokenRepository;
 
 	@Transactional
 	public void saveTokenInfo(String userEmail, String refreshToken, String accessToken) {
-		refreshTokenRepository.save(new RefreshToken(userEmail, refreshToken, accessToken));
+		tokenRepository.save(new RefreshToken(userEmail, refreshToken, accessToken));
 	}
 
-	@Transactional
-	public void removeRefreshToken(String accessToken) {
-		refreshTokenRepository.findByAccessToken(accessToken)
-			.ifPresent(refreshToken -> refreshTokenRepository.delete(null));
-	}
+	// @Transactional
+	// public void removeRefreshToken(String accessToken) {
+	// 	tokenRepository.findByAccessToken(accessToken)
+	// 		.ifPresent(refreshToken -> tokenRepository.delete(null));
+	// }
 }

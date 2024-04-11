@@ -2,6 +2,7 @@ package org.iot.itty.login.security;
 
 import org.iot.itty.login.jwt.JwtFilter;
 import org.iot.itty.login.jwt.JwtUtil;
+import org.iot.itty.login.redis.TokenRepository;
 import org.iot.itty.login.service.LoginService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -26,19 +27,23 @@ public class WebSecurityConfig {
 	private final Environment environment;
 	private final BCryptPasswordEncoder bCryptPasswordEncoder;
 	private final JwtUtil jwtUtil;
+	private final TokenRepository tokenRepository;
 	private final RedisTemplate<String, String> redisTemplate;
 	private final long accessTokenExpTime;
 	private final long refreshTokenExpTime;
 
 	public WebSecurityConfig(LoginService loginService, Environment environment,
 		BCryptPasswordEncoder bCryptPasswordEncoder,
-		JwtUtil jwtUtil, RedisTemplate<String, String> redisTemplate,
+		JwtUtil jwtUtil,
+		TokenRepository tokenRepository,
+		RedisTemplate<String, String> redisTemplate,
 		@Value("${token.expiration_time}") long accessTokenExpTime,
 		@Value("${spring.data.redis.expiration_time}") long refreshTokenExpTime) {
 		this.loginService = loginService;
 		this.environment = environment;
 		this.bCryptPasswordEncoder = bCryptPasswordEncoder;
 		this.jwtUtil = jwtUtil;
+		this.tokenRepository = tokenRepository;
 		this.redisTemplate = redisTemplate;
 		this.accessTokenExpTime = accessTokenExpTime;
 		this.refreshTokenExpTime = refreshTokenExpTime;
@@ -79,12 +84,13 @@ public class WebSecurityConfig {
 				.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
 		http.addFilter(getAuthenticationFilter(authenticationManager));
-		http.addFilterBefore(new JwtFilter(loginService, jwtUtil), UsernamePasswordAuthenticationFilter.class);
+		http.addFilterBefore(new JwtFilter(loginService, jwtUtil, tokenRepository), UsernamePasswordAuthenticationFilter.class);
 		// 받아온 매개변수 http를 build 타입으로 반환
 		return http.build();
 	}
 
 	private AuthenticationFilter getAuthenticationFilter(AuthenticationManager authenticationManager) {
-		return new AuthenticationFilter(authenticationManager, loginService, environment, jwtUtil, accessTokenExpTime, refreshTokenExpTime, redisTemplate);
+		return new AuthenticationFilter(authenticationManager, loginService, environment, jwtUtil, accessTokenExpTime, refreshTokenExpTime,
+			tokenRepository, redisTemplate);
 	}
 }

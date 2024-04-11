@@ -8,8 +8,6 @@ import org.iot.itty.article.service.ReplyService;
 import org.iot.itty.article.vo.ResponseSelectAllArticleByUserCodeFk;
 import org.iot.itty.article.vo.ResponseSelectAllReplyByUserCodeFk;
 import org.iot.itty.article.vo.ResponseSelectAllReplyLikedByUserCodeFk;
-import org.iot.itty.dto.ArticleDTO;
-import org.iot.itty.dto.ReplyDTO;
 import org.iot.itty.dto.UserDTO;
 import org.iot.itty.user.service.UserService;
 import org.iot.itty.user.vo.RequestUserModify;
