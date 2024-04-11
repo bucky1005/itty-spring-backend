@@ -50,39 +50,43 @@ public class JwtFilter extends OncePerRequestFilter {
 			filterChain.doFilter(request, response);
 			return;
 		}
-		try {	// 현재는 토큰이 없어도 모든 api 요청을 처리할 수 있도록 하기 위해 주석 처리
-			// if(!StringUtils.hasText(accessToken))
-			// 	throw new NotExistingToken("토큰이 없습니다.");
 
-			// 로그아웃 된 토큰인지 검사
-			validBlackToken(accessToken);
+		filterChain.doFilter(request, response);
 
-			// Jwt 토큰 만료기간 검증(getAuthentication에서 처리)
-			jwtUtil.validateTokenExpired(accessToken);
-
-			// accessToken에서 인증 객체(Authentication) 추출
-			Authentication authentication = jwtUtil.getAuthentication(accessToken);
-			SecurityContextHolder.getContext().setAuthentication(authentication);
-
-			filterChain.doFilter(request, response);
-		// 로그아웃된 토큰 - 401
-		} catch (BlackToken e){
-			sendResponse(response, e.getMessage(),
-				HttpStatus.UNAUTHORIZED.value(), HttpStatus.PRECONDITION_FAILED.getReasonPhrase());
-			return;
-		} catch (NotExistingToken e) {
-			sendResponse(response, e.getMessage(),
-				HttpStatus.PRECONDITION_FAILED.value(), HttpStatus.PRECONDITION_FAILED.getReasonPhrase());
-		// 정상적이지 않은 토큰 - 401
-		} catch (NotValidToken e) {
-			sendResponse(response, e.getMessage(),
-				HttpStatus.UNAUTHORIZED.value(), HttpStatus.UNAUTHORIZED.getReasonPhrase());
-			return;
-		} catch (Exception e) { //나머지 서버 에러-500
-			sendResponse(response, e.getMessage(),
-				HttpStatus.INTERNAL_SERVER_ERROR.value(), HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase());
-			return;
-		}
+		// 토큰 없이 들어오는 모든 요청을 처리하기 위해 주석 처리
+		// try {
+		// 	// if(!StringUtils.hasText(accessToken))
+		// 	// 	throw new NotExistingToken("토큰이 없습니다.");
+		//
+		// 	// 로그아웃 된 토큰인지 검사
+		// 	validBlackToken(accessToken);
+		//
+		// 	// Jwt 토큰 만료기간 검증(getAuthentication에서 처리)
+		// 	jwtUtil.validateTokenExpired(accessToken);
+		//
+		// 	// accessToken에서 인증 객체(Authentication) 추출
+		// 	Authentication authentication = jwtUtil.getAuthentication(accessToken);
+		// 	SecurityContextHolder.getContext().setAuthentication(authentication);
+		//
+		// 	filterChain.doFilter(request, response);
+		// // 로그아웃된 토큰 - 401
+		// } catch (BlackToken e){
+		// 	sendResponse(response, e.getMessage(),
+		// 		HttpStatus.UNAUTHORIZED.value(), HttpStatus.PRECONDITION_FAILED.getReasonPhrase());
+		// 	return;
+		// } catch (NotExistingToken e) {
+		// 	sendResponse(response, e.getMessage(),
+		// 		HttpStatus.PRECONDITION_FAILED.value(), HttpStatus.PRECONDITION_FAILED.getReasonPhrase());
+		// // 정상적이지 않은 토큰 - 401
+		// } catch (NotValidToken e) {
+		// 	sendResponse(response, e.getMessage(),
+		// 		HttpStatus.UNAUTHORIZED.value(), HttpStatus.UNAUTHORIZED.getReasonPhrase());
+		// 	return;
+		// } catch (Exception e) { //나머지 서버 에러-500
+		// 	sendResponse(response, e.getMessage(),
+		// 		HttpStatus.INTERNAL_SERVER_ERROR.value(), HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase());
+		// 	return;
+		// }
 	}
 
 	/* 로그아웃 토큰 확인 */
