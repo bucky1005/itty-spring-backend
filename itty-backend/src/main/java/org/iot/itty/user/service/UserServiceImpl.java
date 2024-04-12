@@ -31,6 +31,9 @@ public class UserServiceImpl implements UserService{
 		UserEntity user = userRepository.findById(userDTO.getUserCodePk()).orElseThrow(IllegalAccessError::new);
 		user.setUserNickname(userDTO.getUserNickname());
 		user.setUserIntroduction(userDTO.getUserIntroduction());
+		user.setUserName(userDTO.getUserName());
+		user.setUserPassword(userDTO.getUserPassword());
+		user.setUserPhoneNumber(userDTO.getUserPhoneNumber());
 
 		return modelMapper.map(user, UserDTO.class);
 	}

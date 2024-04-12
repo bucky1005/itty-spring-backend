@@ -3,6 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/itty.main.iml" filepath="$PROJECT_DIR$/.idea/modules/itty.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/itty_back.iml" filepath="$PROJECT_DIR$/.idea/itty_back.iml" />
     </modules>
   </component>
 </project>
