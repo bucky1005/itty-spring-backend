@@ -61,17 +61,17 @@ public class LoginController {
 		return ResponseEntity.status(HttpStatus.CREATED).body(responseRegist);
 	}
 
-	/* 로그아웃 */
-	@PostMapping("/user/logout")
-	public ResponseEntity<Void> logout(String accessToken) {
-
-		System.out.println("logout 요청");
-		// System.out.println("accessToken" + accessToken);
-		// String userEmail = jwtUtil.getUserEmail(accessToken);
-
-		// System.out.println("userEmail: " + userEmail);
-		return null;
-	}
+	// /* 로그아웃 */
+	// @PostMapping("/user/logout")
+	// public ResponseEntity<Void> logout(@RequestHeader String Authorization) {
+	//
+	// 	System.out.println("logout 요청");
+	// 	System.out.println("accessToken: " + Authorization);
+	// 	// String userEmail = jwtUtil.getUserEmail(accessToken);
+	//
+	// 	// System.out.println("userEmail: " + userEmail);
+	// 	return null;
+	// }
 
 	/* 토큰 검증 실패 시 실행되는 api */
 	@GetMapping("/error/unauthorized")

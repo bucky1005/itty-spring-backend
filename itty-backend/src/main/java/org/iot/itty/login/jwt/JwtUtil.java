@@ -143,9 +143,36 @@ public class JwtUtil {
 		return expiration.getTime() - now;
 	}
 
+	/* 액세스 토큰의 유효시간을 0으로 설정 */
+	public String setExpirationToZero(String accessToken) {
+		try {
+			// 주어진 액세스 토큰을 파싱하여 클레임을 가져옴
+			Claims claims = Jwts.parserBuilder().setSigningKey(key)
+				.build().parseClaimsJws(accessToken).getBody();
+
+			// 현재 시간을 가져옴
+			Date now = new Date();
+
+			// 만료 시간을 현재 시간으로 설정하여 만료되도록 함
+			claims.setExpiration(now);
+
+			// 새로운 토큰을 생성하여 반환
+			return Jwts.builder()
+				.setClaims(claims)
+				.signWith(key)
+				.compact();
+		} catch (Exception e) {
+			// 토큰을 파싱하거나 새로운 토큰을 생성하는 중에 예외가 발생한 경우
+			// 예외를 처리하거나 적절한 방법으로 처리하십시오.
+			e.printStackTrace();
+			return null;
+		}
+	}
+
 	/* 토큰 유효시간 만료 검증 */
 	public boolean validateTokenExpired(String Token) {
 		long expiration = getExpiration(Token);
+		System.out.println("유효시간 검증: " + expiration);
 
 		if (expiration <= 0)	// 토큰이 만료된 경우
 			return false;
@@ -178,21 +205,23 @@ public class JwtUtil {
 
 		String userEmail = getUserEmail(accessToken);
 
-		long tokenExpiration = getExpiration(accessToken) * 60 * 1000;
-		System.out.println("token 만료 시간(Millis): " + tokenExpiration);
+		// long tokenExpiration = getExpiration(accessToken) * 60 * 1000;
+		// System.out.println("token 만료 시간(Millis): " + tokenExpiration);
+		//
+		// // 남은 유효시간을 0으로 설정
+		// long expiration = tokenExpiration - tokenExpiration;
+		// System.out.println("남은 유효 시간(Minute): " + expiration);
 
-		long currentTimeMillis = System.currentTimeMillis();
-		System.out.println("현재 시간(Millis): " + currentTimeMillis);
+		String expiredToken = setExpirationToZero(accessToken);
 
-		long expiration = (tokenExpiration - currentTimeMillis) / (1000 * 60);	//분 단위로 저장
-		System.out.println("남은 유효 시간(Minute): " + expiration);
+		// expiredToken
 
 		tokenRepository.deleteById(accessToken);
 
 		BlackToken blackToken = new BlackToken();
-		blackToken.setAccessToken(accessToken);
+		blackToken.setAccessToken(expiredToken);
 		blackToken.setUserEmail(userEmail);
-		blackToken.setExpriation(expiration);
+		// blackToken.setExpriation(expiration);
 
 		blackTokenRepository.save(blackToken);
 	}
