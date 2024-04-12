@@ -69,40 +69,32 @@ public class LoginServiceImpl implements LoginService {
 		return data.getUserCodePk();
 	}
 
-	/* 로그아웃 */
-	@Override
-	public void userLogout(String accessToken) {
-		// Token에서 로그인된 사용자의 Token을 가져옴
-
-		ModelMapper mapper = new ModelMapper();
-
-		// RefreshToken refreshToken = mapper.map(userEmail, RefreshToken.class);
-
-		// 액세스 토큰의 유효시간
-		// Long expiration = jwtUtil.getExpiration(accessToken);
-
-		// Redis Cache 저장
-		// redisTemplate.opsForValue().set(accessToken, "logout", expiration, TimeUnit.MILLISECONDS);
-
-		// refreshToken 삭제
-		// refreshTokenRepository.delete(refreshToken);
-	}
-
 	/* 회원 탈퇴 */
 	@Override
-	public boolean userWithdrawal(UserDTO userDTO) {
+	public boolean withdrawalUser(UserDTO userDTO) {
 
 		boolean isWithdrawalSuccessful = true;
+
+		String inputUserPassword = userDTO.getUserPassword();
+
 		UserEntity user = userRepository.findByUserEmail(userDTO.getUserEmail());
 
-		if(user != null) {
-			if (user.getUserDeleteStatus() != 1) {
+		boolean isVaildateUserPassword = validatePassword(user, inputUserPassword);
 
-				user.setUserDeleteStatus(1);
+		if (user != null) {
+			if (isVaildateUserPassword) {
+				log.info("비밀번호 일치");
 
-				userRepository.save(user);
+				if (user.getUserDeleteStatus() != 1) {
 
-				return isWithdrawalSuccessful;
+					user.setUserDeleteStatus(1);
+
+					userRepository.save(user);
+
+					return isWithdrawalSuccessful;
+				}
+			} else {
+				throw new IllegalAccessError("비밀번호가 일치하지 않습니다.");
 			}
 		} else {
 			// return ResponseEntity.badRequest().build().hasBody();
@@ -112,12 +104,23 @@ public class LoginServiceImpl implements LoginService {
 		return !isWithdrawalSuccessful;
 	}
 
+	/* 비밀번호 유효성 검사 */
+	private boolean validatePassword(UserEntity user, String inputUserPassword) {
+		String userPassword = user.getUserPassword();
+
+		if (bCryptPasswordEncoder.matches(inputUserPassword, userPassword)) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+
 	/* DB에서 유저 정보를 가져와 입력된 정보와 비교할 User 객체 생성 */
 	@Override
 	public UserDetails loadUserByUsername(String userEmail) throws UsernameNotFoundException {
 		UserEntity userEntity = userRepository.findByUserEmail(userEmail);
 
-		if(userEntity == null) {
+		if (userEntity == null) {
 			throw new UsernameNotFoundException("'" + userEmail + "' 해당 유저는 존재하지 않습니다.");
 		}
 
@@ -131,7 +134,7 @@ public class LoginServiceImpl implements LoginService {
 	public UserDTO getUserDetailsByUserEmail(String userEmail) {
 		UserEntity userEntity = userRepository.findByUserEmail(userEmail);
 
-		if(userEntity == null)
+		if (userEntity == null)
 			throw new UsernameNotFoundException(userEmail);
 
 		ModelMapper mapper = new ModelMapper();
