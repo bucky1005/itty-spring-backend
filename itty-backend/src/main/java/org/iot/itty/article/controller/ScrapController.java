@@ -48,8 +48,8 @@ public class ScrapController {
 		);
 	}
 
-	@PostMapping("/scrap/add")
-	public ResponseEntity<Map<String, String>> addScrap(@RequestBody RequestAddScrap requestAddScrap) {
+	@PostMapping("/scrap")
+	public ResponseEntity<Map<String, String>> registScrap(@RequestBody RequestAddScrap requestAddScrap) {
 
 		ScrapDTO responseScrapDTO = scrapService.addScrap(requestAddScrap);
 		Map<String, String> result = new HashMap<>();
@@ -65,7 +65,7 @@ public class ScrapController {
 		return ResponseEntity.status(HttpStatus.CREATED).body(result);
 	}
 
-	@DeleteMapping("/scrap/delete")
+	@DeleteMapping("/scrap")
 	public ResponseEntity<Map<String, String>> deleteScrap(@RequestBody RequestDeleteScrap requestDeleteScrap) {
 		String returnedMessage = scrapService.deleteScrap(requestDeleteScrap);
 

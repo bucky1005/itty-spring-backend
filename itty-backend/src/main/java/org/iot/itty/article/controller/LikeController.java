@@ -72,8 +72,8 @@ public class LikeController {
 		return ResponseEntity.status(HttpStatus.OK).body(result);
 	}
 
-	@PostMapping("/article/freeboard/like/add")
-	public ResponseEntity<Map<String, String>> addArticleLike(@RequestBody RequestAddArticleLike requestAddArticleLike) {
+	@PostMapping("/article/bulletin/like")
+	public ResponseEntity<Map<String, String>> registArticleLike(@RequestBody RequestAddArticleLike requestAddArticleLike) {
 
 		ArticleLikeDTO responseArticleLikeDTO = likeService.addArticleLike(requestAddArticleLike);
 		Map<String, String> result = new HashMap<>();
@@ -89,7 +89,7 @@ public class LikeController {
 		return ResponseEntity.status(HttpStatus.CREATED).body(result);
 	}
 
-	@DeleteMapping("/article/freeboard/like/delete")
+	@DeleteMapping("/article/bulletin/like")
 	public ResponseEntity<Map<String, String>> deleteArticleLike(@RequestBody RequestDeleteArticleLike requestDeleteArticleLike) {
 		String returnedMessage = likeService.deleteArticleLike(requestDeleteArticleLike);
 
@@ -99,8 +99,8 @@ public class LikeController {
 		return ResponseEntity.status(HttpStatus.OK).body(result);
 	}
 
-	@PostMapping("/reply/like/add")
-	public ResponseEntity<Map<String, String>> addReplyLike(@RequestBody RequestAddReplyLike requestAddReplyLike) {
+	@PostMapping("/reply/like")
+	public ResponseEntity<Map<String, String>> registReplyLike(@RequestBody RequestAddReplyLike requestAddReplyLike) {
 		ReplyLikeDTO responseReplyLikeDTO = likeService.addReplyLike(requestAddReplyLike);
 		Map<String, String> result = new HashMap<>();
 
@@ -112,7 +112,7 @@ public class LikeController {
 		return ResponseEntity.status(HttpStatus.CREATED).body(result);
 	}
 
-	@DeleteMapping("/reply/like/delete")
+	@DeleteMapping("/reply/like")
 	public ResponseEntity<Map<String, String>> deleteReplyLike(@RequestBody RequestDeleteReplyLike requestDeleteReplyLike) {
 		String returnedMessage = likeService.deleteReplyLike(requestDeleteReplyLike);
 
