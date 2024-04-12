@@ -2,7 +2,6 @@ package org.iot.itty.login.controller;
 
 import org.iot.itty.dto.UserDTO;
 import org.iot.itty.login.jwt.JwtUtil;
-import org.iot.itty.login.redis.RedisConfig;
 import org.iot.itty.login.service.LoginService;
 import org.iot.itty.login.vo.RequestRegist;
 import org.iot.itty.login.vo.RequestWithdrawal;
@@ -17,7 +16,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -88,7 +86,7 @@ public class LoginController {
 	// }
 
 	@PutMapping("/user/withdrawal")
-	public ResponseEntity<ResponseWithdrawal> userWithdrawal(@RequestBody RequestWithdrawal requestWithdrawal) {
+	public ResponseEntity<ResponseWithdrawal> withdrawalUser(@RequestBody RequestWithdrawal requestWithdrawal) {
 
 		modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
 		UserDTO userDTO = modelMapper.map(requestWithdrawal, UserDTO.class);
@@ -96,7 +94,7 @@ public class LoginController {
 		ResponseWithdrawal responseWithdrawal = new ResponseWithdrawal();
 		responseWithdrawal.setUserEmail(requestWithdrawal.getUserEmail());
 
-		boolean isWithdrawalSuccessful = loginService.userWithdrawal(userDTO);
+		boolean isWithdrawalSuccessful = loginService.withdrawalUser(userDTO);
 
 		if (isWithdrawalSuccessful) {
 			responseWithdrawal.setMessage("회원 탈퇴 완료");

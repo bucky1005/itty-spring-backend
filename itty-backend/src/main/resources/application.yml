@@ -29,7 +29,13 @@ token:
 
 management:
   endpoints:
+    metrics:
+      enabled: true
+    prometheus:
+      enabled: true
     web:
       exposure:
-        include: "*"
-      base-path: /application
+        include: health, info, metrics, prometheus
+  metrics:
+    tags:
+      application: ${spring.application.name}
