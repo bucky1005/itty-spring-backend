@@ -72,10 +72,10 @@ public class ArticleServiceImpl implements ArticleService{
 
 	@Transactional
 	@Override
-	public ArticleDTO modifyFreeBoardArticle(ArticleDTO requestArticleDTO, int articleCodePk) {
-		ArticleEntity foundArticleEntity = articleRepository.findById(articleCodePk).get();
+	public ArticleDTO modifyFreeBoardArticle(ArticleDTO requestArticleDTO) {
+		ArticleEntity foundArticleEntity = articleRepository.findById(requestArticleDTO.getArticleCodePk()).get();
 		ArticleEntity articleEntity = ArticleEntity.builder()
-			.articleCodePk(articleCodePk)
+			.articleCodePk(requestArticleDTO.getArticleCodePk())
 			.articleTitle(requestArticleDTO.getArticleTitle())
 			.articleContent(requestArticleDTO.getArticleContent())
 			.articleCreatedDate(foundArticleEntity.getArticleCreatedDate())

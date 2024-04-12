@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.iot.itty.article.service.ReplyService;
+import org.iot.itty.article.vo.RequestDeleteReply;
 import org.iot.itty.article.vo.RequestModifyReply;
 import org.iot.itty.article.vo.RequestRegistReply;
 import org.iot.itty.article.vo.ResponseModifyReply;
@@ -44,8 +45,8 @@ public class ReplyController {
 		this.mapper = mapper;
 	}
 
-	@GetMapping("/reply/article/{articleCodeFk}")
-	public ResponseEntity<List<ResponseSelectReplyByArticleCodeFk>> selectReplyByArticleCodeFk(@PathVariable("articleCodeFk") int articleCodeFk) {
+	@GetMapping("/reply/{articleCodeFk}")
+	public ResponseEntity<List<ResponseSelectReplyByArticleCodeFk>> selectAllReplyByBulletinArticleCodeFk(@PathVariable("articleCodeFk") int articleCodeFk) {
 		List<ReplyDTO> replyDTOList = replyService.selectReplyByArticleCodeFk(articleCodeFk);
 
 		// mapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
@@ -63,7 +64,7 @@ public class ReplyController {
 	}
 
 	/* 회원별 댓글 list 조회 */
-	@GetMapping("reply/user/{userCodeFk}")
+	@GetMapping("/user/{userCodeFk}/replies")
 	public ResponseEntity<List<ResponseSelectAllReplyByUserCodeFk>> selectAllReplyByUserCodeFk(@PathVariable("userCodeFk") int userCodeFk) {
 		List<ReplyDTO> replyDTOList = replyService.selectAllReplyByUserCodeFk(userCodeFk);
 		List<ResponseSelectAllReplyByUserCodeFk> responseSelectAllReplyByUserCodeFkList = new ArrayList<>();
@@ -79,7 +80,7 @@ public class ReplyController {
 	}
 
 	/* 댓글 등록 */
-	@PostMapping("/reply/regist")
+	@PostMapping("/reply")
 	public ResponseEntity<ResponseRegistReply> registReply(@RequestBody RequestRegistReply requestRegistReply) {
 		ReplyDTO requestReplyDTO = mapper.map(requestRegistReply, ReplyDTO.class);
 		ResponseRegistReply responseRegistReply = new ResponseRegistReply();
@@ -98,7 +99,7 @@ public class ReplyController {
 	}
 
 	/* 댓글 수정 */
-	@PutMapping("/reply/{replyCodePk}/modify")
+	@PutMapping("/reply")
 	public ResponseEntity<Map<String, String>> modifyReply(
 		@RequestBody RequestModifyReply requestModifyReply,
 		@PathVariable("replyCodePk") int replyCodePk
@@ -124,9 +125,9 @@ public class ReplyController {
 			.body(result);
 	}
 
-	@DeleteMapping("/reply/{replyCodePk}/delete")
-	public ResponseEntity<Map<String, String>> deleteReply(@PathVariable("replyCodePk") int replyCodePk) {
-		String returnedMessage = replyService.deleteReply(replyCodePk);
+	@DeleteMapping("/reply")
+	public ResponseEntity<Map<String, String>> deleteReply(@RequestBody RequestDeleteReply requestDeleteReply) {
+		String returnedMessage = replyService.deleteReply(requestDeleteReply.getReplyCodePk());
 		Map<String, String> result = new HashMap<>();
 
 		result.put("message", returnedMessage);
