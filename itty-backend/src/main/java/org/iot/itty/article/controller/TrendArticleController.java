@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.iot.itty.article.service.TrendArticleService;
+import org.iot.itty.article.vo.RequestDeleteTrendArticle;
 import org.iot.itty.article.vo.ResponseTrendArticle;
 import org.iot.itty.dto.TrendArticleDTO;
 import org.modelmapper.ModelMapper;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -62,8 +64,10 @@ public class TrendArticleController {
 
 	@Transactional
 	@DeleteMapping("/article/trend")
-	public ResponseEntity<Map<String, String>> deleteTrendArticle(@PathVariable("trendArticleCodePk") int trendArticleCodePk) {
-		String returnedMessage = trendArticleService.deleteTrendArticle(trendArticleCodePk);
+	public ResponseEntity<Map<String, String>> deleteTrendArticle(@RequestBody RequestDeleteTrendArticle requestDeleteTrendArticle) {
+		String returnedMessage = trendArticleService.deleteTrendArticle(
+			requestDeleteTrendArticle.getTrendArticleCodePk()
+		);
 
 		Map<String, String> result = new HashMap<>();
 		result.put("message", returnedMessage);

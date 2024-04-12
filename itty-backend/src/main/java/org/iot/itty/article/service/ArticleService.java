@@ -13,7 +13,7 @@ public interface ArticleService {
 
 	ArticleDTO registFreeBoardArticle(ArticleDTO requestArticleDTO);
 
-	ArticleDTO modifyFreeBoardArticle(ArticleDTO requestArticleDTO, int articleCodePk);
+	ArticleDTO modifyFreeBoardArticle(ArticleDTO requestArticleDTO);
 
 	String deleteFreeBoardArticle(int articleCodePk);
 }

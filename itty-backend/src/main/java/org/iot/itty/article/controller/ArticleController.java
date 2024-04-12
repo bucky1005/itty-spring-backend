@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.iot.itty.article.service.ArticleService;
 import org.iot.itty.article.service.ReplyService;
+import org.iot.itty.article.vo.RequestDeleteBulletinArticle;
 import org.iot.itty.article.vo.RequestModifyFreeBoardArticle;
 import org.iot.itty.article.vo.RequestRegistFreeBoardArticle;
 import org.iot.itty.article.vo.ResponseArticle;
@@ -119,15 +120,16 @@ public class ArticleController {
 	/* 자유게시판 게시글 수정 */
 	@PutMapping("/article/bulletin")
 	public ResponseEntity<ResponseModifyFreeBoardArticle> modifyBulletinArticle(
-		@RequestBody RequestModifyFreeBoardArticle requestModifyFreeBoardArticle,
-		@PathVariable("articleCodePk") int articleCodePk
+		@RequestBody RequestModifyFreeBoardArticle requestModifyFreeBoardArticle
 	)
 	{
 		mapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
 		ArticleDTO requestArticleDTO = mapper.map(requestModifyFreeBoardArticle, ArticleDTO.class);
-		ArticleDTO responseArticleDTO = articleService.modifyFreeBoardArticle(requestArticleDTO, articleCodePk);
+		ArticleDTO responseArticleDTO = articleService.modifyFreeBoardArticle(requestArticleDTO);
 
-		responseArticleDTO.setReplyDTOList(replyService.selectReplyByArticleCodeFk(articleCodePk));
+		responseArticleDTO.setReplyDTOList(replyService.selectReplyByArticleCodeFk(
+			requestModifyFreeBoardArticle.getArticleCodePk()
+		));
 
 		return ResponseEntity
 			.status(HttpStatus.OK)
@@ -135,13 +137,13 @@ public class ArticleController {
 	}
 
 	/* 자유게시판 게시글 삭제 */
-	@DeleteMapping("/article/freeboard")
+	@DeleteMapping("/article/bulletin")
 	public ResponseEntity<ResponseDeleteFreeBoardArticle> deleteBulletinArticle(
-		@PathVariable("articleCodePk") int articleCodePk
+		@RequestBody RequestDeleteBulletinArticle requestDeleteBulletinArticle
 	)
 	{
 		mapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
-		String returnedMessage = articleService.deleteFreeBoardArticle(articleCodePk);
+		String returnedMessage = articleService.deleteFreeBoardArticle(requestDeleteBulletinArticle.getArticleCodePk());
 
 		ResponseDeleteFreeBoardArticle responseDeleteFreeBoardArticle = new ResponseDeleteFreeBoardArticle();
 		responseDeleteFreeBoardArticle.setMessage(returnedMessage);

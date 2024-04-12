@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.iot.itty.article.service.ReplyService;
+import org.iot.itty.article.vo.RequestDeleteReply;
 import org.iot.itty.article.vo.RequestModifyReply;
 import org.iot.itty.article.vo.RequestRegistReply;
 import org.iot.itty.article.vo.ResponseModifyReply;
@@ -125,8 +126,8 @@ public class ReplyController {
 	}
 
 	@DeleteMapping("/reply")
-	public ResponseEntity<Map<String, String>> deleteReply(@PathVariable("replyCodePk") int replyCodePk) {
-		String returnedMessage = replyService.deleteReply(replyCodePk);
+	public ResponseEntity<Map<String, String>> deleteReply(@RequestBody RequestDeleteReply requestDeleteReply) {
+		String returnedMessage = replyService.deleteReply(requestDeleteReply.getReplyCodePk());
 		Map<String, String> result = new HashMap<>();
 
 		result.put("message", returnedMessage);
