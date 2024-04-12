@@ -2,10 +2,13 @@ package org.iot.itty.login.security;
 
 import org.iot.itty.login.jwt.JwtFilter;
 import org.iot.itty.login.jwt.JwtUtil;
+import org.iot.itty.login.redis.TokenRepository;
 import org.iot.itty.login.service.LoginService;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -16,8 +19,6 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
-import jakarta.servlet.Filter;
-
 @Configuration
 @EnableWebSecurity
 public class WebSecurityConfig {
@@ -26,13 +27,26 @@ public class WebSecurityConfig {
 	private final Environment environment;
 	private final BCryptPasswordEncoder bCryptPasswordEncoder;
 	private final JwtUtil jwtUtil;
+	private final TokenRepository tokenRepository;
+	private final RedisTemplate<String, String> redisTemplate;
+	private final long accessTokenExpTime;
+	private final long refreshTokenExpTime;
 
 	public WebSecurityConfig(LoginService loginService, Environment environment,
-		BCryptPasswordEncoder bCryptPasswordEncoder, JwtUtil jwtUtil) {
+		BCryptPasswordEncoder bCryptPasswordEncoder,
+		JwtUtil jwtUtil,
+		TokenRepository tokenRepository,
+		RedisTemplate<String, String> redisTemplate,
+		@Value("${token.expiration_time}") long accessTokenExpTime,
+		@Value("${spring.data.redis.expiration_time}") long refreshTokenExpTime) {
 		this.loginService = loginService;
 		this.environment = environment;
 		this.bCryptPasswordEncoder = bCryptPasswordEncoder;
 		this.jwtUtil = jwtUtil;
+		this.tokenRepository = tokenRepository;
+		this.redisTemplate = redisTemplate;
+		this.accessTokenExpTime = accessTokenExpTime;
+		this.refreshTokenExpTime = refreshTokenExpTime;
 	}
 
 	@Bean
@@ -54,13 +68,14 @@ public class WebSecurityConfig {
 
 		// 인가(Authorization)
 		http.authorizeHttpRequests((auth) -> auth
-			.requestMatchers("/login", "/", "regist").permitAll()
+				.requestMatchers("/login", "/", "regist").permitAll()
 
-			// 전체 권한 설정(추후 수정)
-			.requestMatchers(new AntPathRequestMatcher("/**")).permitAll()
+				// 전체 권한 설정(추후 수정)
+				.requestMatchers(new AntPathRequestMatcher("/**")).permitAll()
+				// .requestMatchers(new AntPathRequestMatcher("/test")).hasRole("USER")
 
-			// 권한 부여 설정을 하지 않은 요청은 로그인된 사용자에게만 허용
-			.anyRequest().authenticated())
+				// 권한 부여 설정을 하지 않은 요청은 로그인된 사용자에게만 허용
+				.anyRequest().authenticated())
 			.authenticationManager(authenticationManager)
 
 			// 세션 설정
@@ -69,12 +84,26 @@ public class WebSecurityConfig {
 				.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
 		http.addFilter(getAuthenticationFilter(authenticationManager));
-		http.addFilterBefore(new JwtFilter(loginService, jwtUtil), UsernamePasswordAuthenticationFilter.class);
+		http.addFilterBefore(new JwtFilter(loginService, jwtUtil, tokenRepository),
+			UsernamePasswordAuthenticationFilter.class);
+
+		/* SecurityFilterChain에 로그아웃 핸들러 등록 */
+		http.logout(httpSecurityLogoutConfigurer ->
+			httpSecurityLogoutConfigurer
+				.addLogoutHandler(new UserLogoutHandler(jwtUtil))
+				.logoutSuccessHandler(new UserLogoutHandler(jwtUtil))
+				.logoutUrl("/user/logout")
+				.invalidateHttpSession(true)
+				.permitAll()
+		);
+
 		// 받아온 매개변수 http를 build 타입으로 반환
 		return http.build();
 	}
 
 	private AuthenticationFilter getAuthenticationFilter(AuthenticationManager authenticationManager) {
-		return new AuthenticationFilter(authenticationManager, loginService, environment);
+		return new AuthenticationFilter(authenticationManager, loginService, environment, jwtUtil, accessTokenExpTime,
+			refreshTokenExpTime,
+			tokenRepository, redisTemplate);
 	}
 }
