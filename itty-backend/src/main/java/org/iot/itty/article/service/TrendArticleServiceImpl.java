@@ -84,4 +84,14 @@ public class TrendArticleServiceImpl implements TrendArticleService{
 			.map(TrendArticleEntity -> modelMapper.map(TrendArticleEntity, TrendArticleDTO.class))
 			.toList();
 	}
+
+	@Override
+	public String deleteTrendArticle(int trendArticleCodePk) {
+		try {
+			trendArticleRepository.deleteById(trendArticleCodePk);
+			return "Successfully deleted trend article.";
+		} catch (Exception e) {
+			return "Failed to delete trend article.";
+		}
+	}
 }
