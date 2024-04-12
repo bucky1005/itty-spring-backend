@@ -5,11 +5,15 @@ import java.util.List;
 import org.iot.itty.article.service.ArticleService;
 import org.iot.itty.article.service.LikeService;
 import org.iot.itty.article.service.ReplyService;
+import org.iot.itty.article.service.ScrapService;
 import org.iot.itty.article.vo.ResponseSelectAllArticleByUserCodeFk;
+import org.iot.itty.article.vo.ResponseSelectAllArticleLikedByUserCodeFk;
 import org.iot.itty.article.vo.ResponseSelectAllReplyByUserCodeFk;
 import org.iot.itty.article.vo.ResponseSelectAllReplyLikedByUserCodeFk;
+import org.iot.itty.article.vo.ResponseSelectAllScrapByUserCodeFk;
 import org.iot.itty.dto.ArticleDTO;
 import org.iot.itty.dto.ReplyDTO;
+import org.iot.itty.dto.TrendArticleDTO;
 import org.iot.itty.dto.UserDTO;
 import org.iot.itty.user.service.UserService;
 import org.iot.itty.user.vo.RequestUserModify;
@@ -35,6 +39,7 @@ public class UserController {
 	private final ArticleService articleService;
 	private final ReplyService replyService;
 	private final LikeService likeService;
+	private final ScrapService scrapService;
 
 	@Autowired
 	public UserController(
@@ -42,7 +47,8 @@ public class UserController {
 		UserService userService,
 		ArticleService articleService,
 		ReplyService replyService,
-		LikeService likeService
+		LikeService likeService,
+		ScrapService scrapService
 	)
 	{
 		this.modelMapper = modelMapper;
@@ -50,6 +56,7 @@ public class UserController {
 		this.articleService = articleService;
 		this.replyService = replyService;
 		this.likeService = likeService;
+		this.scrapService = scrapService;
 	}
 
 	/* 회원별 회원정보 조회 */
@@ -71,6 +78,13 @@ public class UserController {
 				.map(ReplyDTO -> modelMapper.map(ReplyDTO, ResponseSelectAllReplyByUserCodeFk.class))
 				.toList();
 
+		/* 해당 회원이 좋아요 누른 게시글 리스트 가져오기 */
+		List<ResponseSelectAllArticleLikedByUserCodeFk> responseSelectAllArticleLikedByUserCodeFkList =
+			likeService.selectAllArticleLikedbyUserCodeFk(userCodePk)
+				.stream()
+				.map(ArticleDTO -> modelMapper.map(ArticleDTO, ResponseSelectAllArticleLikedByUserCodeFk.class))
+				.toList();
+
 		/* 해당 회원이 좋아요 누른 댓글 리스트 가져오기 */
 		List<ResponseSelectAllReplyLikedByUserCodeFk> responseSelectAllReplyLikedByUserCodeFkList =
 			likeService.selectAllLikeByUserCodeFk(userCodePk)
@@ -78,9 +92,18 @@ public class UserController {
 				.map(ReplyDTO -> modelMapper.map(ReplyDTO, ResponseSelectAllReplyLikedByUserCodeFk.class))
 				.toList();
 
+		/* 해당 회원이 스크랩한 트렌드 게시글 리스트 가져오기 */
+		List<ResponseSelectAllScrapByUserCodeFk> responseSelectAllScrapByUserCodeFkList =
+			scrapService.selectAllScrapByUserCodeFk(userCodePk)
+				.stream()
+				.map(TrendArticleDTO -> modelMapper.map(TrendArticleDTO, ResponseSelectAllScrapByUserCodeFk.class))
+				.toList();
+
 		userDTO.setArticleDTOList(responseSelectAllArticleByUserCodeFkList);
 		userDTO.setReplyDTOList(responseSelectAllReplyByUserCodeFkList);
+		userDTO.setLikedArticleDTOList(responseSelectAllArticleLikedByUserCodeFkList);
 		userDTO.setLikedReplyDTOList(responseSelectAllReplyLikedByUserCodeFkList);
+		userDTO.setScrappedTrendArticleDTOList(responseSelectAllScrapByUserCodeFkList);
 		return ResponseEntity.status(HttpStatus.OK).body(modelMapper.map(userDTO, ResponseSelectUserByUserCodePk.class));
 	}
 

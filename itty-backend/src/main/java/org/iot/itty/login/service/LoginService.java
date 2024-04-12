@@ -1,6 +1,9 @@
 package org.iot.itty.login.service;
 
+import org.iot.itty.dto.TokenDTO;
 import org.iot.itty.dto.UserDTO;
+import org.iot.itty.login.vo.RequestLogin;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UserDetailsService;
 
 public interface LoginService extends UserDetailsService {
@@ -14,5 +17,5 @@ public interface LoginService extends UserDetailsService {
 
 	boolean userWithdrawal(UserDTO userDTO);
 
-	void userLogout();
+	void userLogout(String accessToken);
 }

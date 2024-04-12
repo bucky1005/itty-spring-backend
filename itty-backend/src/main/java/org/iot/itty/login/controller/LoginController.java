@@ -1,6 +1,8 @@
 package org.iot.itty.login.controller;
 
 import org.iot.itty.dto.UserDTO;
+import org.iot.itty.login.jwt.JwtUtil;
+import org.iot.itty.login.redis.RedisConfig;
 import org.iot.itty.login.service.LoginService;
 import org.iot.itty.login.vo.RequestRegist;
 import org.iot.itty.login.vo.RequestWithdrawal;
@@ -11,15 +13,14 @@ import org.modelmapper.convention.MatchingStrategies;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.web.firewall.HttpStatusRequestRejectedHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 
 @RestController
@@ -28,15 +29,19 @@ import lombok.extern.slf4j.Slf4j;
 public class LoginController {
 	private final LoginService loginService;
 	private final ModelMapper modelMapper;
+	private final JwtUtil jwtUtil;
 
 	@Autowired
-	public LoginController(LoginService loginService, ModelMapper modelMapper) {
+	public LoginController(LoginService loginService, ModelMapper modelMapper,
+		JwtUtil jwtUtil) {
 		this.loginService = loginService;
 		this.modelMapper = modelMapper;
+		this.jwtUtil = jwtUtil;
 	}
 
 	@GetMapping("/health_check")
 	public String healthCheck() {
+
 		return "check check";
 	}
 
@@ -56,19 +61,31 @@ public class LoginController {
 		return ResponseEntity.status(HttpStatus.CREATED).body(responseRegist);
 	}
 
+	// /* 로그아웃 */
+	// @PostMapping("/user/logout")
+	// public ResponseEntity<Void> logout(@RequestHeader String Authorization) {
+	//
+	// 	System.out.println("logout 요청");
+	// 	System.out.println("accessToken: " + Authorization);
+	// 	// String userEmail = jwtUtil.getUserEmail(accessToken);
+	//
+	// 	// System.out.println("userEmail: " + userEmail);
+	// 	return null;
+	// }
+
 	/* 토큰 검증 실패 시 실행되는 api */
 	@GetMapping("/error/unauthorized")
 	public ResponseEntity<Void> unauthorized() {
 		return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
 	}
 
-	@PostMapping("/logout")
-	public ResponseEntity<Void> userLogout(HttpServletRequest servletRequest) {
-
-		loginService.userLogout();
-
-		return ResponseEntity.status(HttpStatus.OK).build();
-	}
+	// @PostMapping("/logout")
+	// public ResponseEntity<Void> userLogout(HttpServletRequest servletRequest) {
+	//
+	// 	loginService.userLogout();
+	//
+	// 	return ResponseEntity.status(HttpStatus.OK).build();
+	// }
 
 	@PutMapping("/user/withdrawal")
 	public ResponseEntity<ResponseWithdrawal> userWithdrawal(@RequestBody RequestWithdrawal requestWithdrawal) {

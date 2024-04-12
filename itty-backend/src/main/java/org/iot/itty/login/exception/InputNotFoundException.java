@@ -1,4 +1,4 @@
-package org.iot.itty.login.security;
+package org.iot.itty.login.exception;
 
 public class InputNotFoundException extends RuntimeException {
 	public InputNotFoundException() {

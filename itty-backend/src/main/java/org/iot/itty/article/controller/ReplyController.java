@@ -1,10 +1,14 @@
 package org.iot.itty.article.controller;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.iot.itty.article.service.ReplyService;
+import org.iot.itty.article.vo.RequestModifyReply;
 import org.iot.itty.article.vo.RequestRegistReply;
+import org.iot.itty.article.vo.ResponseModifyReply;
 import org.iot.itty.article.vo.ResponseRegistReply;
 import org.iot.itty.article.vo.ResponseSelectAllReplyByUserCodeFk;
 import org.iot.itty.article.vo.ResponseSelectReplyByArticleCodeFk;
@@ -16,9 +20,11 @@ import org.modelmapper.convention.MatchingStrategies;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -56,6 +62,7 @@ public class ReplyController {
 		return ResponseEntity.status(HttpStatus.OK).body(responseSelectReplyByArticleCodeFkList);
 	}
 
+	/* 회원별 댓글 list 조회 */
 	@GetMapping("reply/user/{userCodeFk}")
 	public ResponseEntity<List<ResponseSelectAllReplyByUserCodeFk>> selectAllReplyByUserCodeFk(@PathVariable("userCodeFk") int userCodeFk) {
 		List<ReplyDTO> replyDTOList = replyService.selectAllReplyByUserCodeFk(userCodeFk);
@@ -71,6 +78,7 @@ public class ReplyController {
 		return ResponseEntity.status(HttpStatus.OK).body(responseSelectAllReplyByUserCodeFkList);
 	}
 
+	/* 댓글 등록 */
 	@PostMapping("/reply/regist")
 	public ResponseEntity<ResponseRegistReply> registReply(@RequestBody RequestRegistReply requestRegistReply) {
 		ReplyDTO requestReplyDTO = mapper.map(requestRegistReply, ReplyDTO.class);
@@ -87,5 +95,41 @@ public class ReplyController {
 		}
 
 		return ResponseEntity.status(HttpStatus.CREATED).body(responseRegistReply);
+	}
+
+	/* 댓글 수정 */
+	@PutMapping("/reply/{replyCodePk}/modify")
+	public ResponseEntity<Map<String, String>> modifyReply(
+		@RequestBody RequestModifyReply requestModifyReply,
+		@PathVariable("replyCodePk") int replyCodePk
+	) {
+		ReplyDTO requestReplyDTO = mapper.map(requestModifyReply, ReplyDTO.class);
+		ReplyDTO responseReplyDTO = replyService.modifyReply(requestReplyDTO, replyCodePk);
+		Map<String, String> result = new HashMap<>();
+		if (responseReplyDTO != null) {
+			result.put(
+				"message",
+				"reply from article #" + responseReplyDTO.getArticleCodeFk() +
+					" written by user #" + responseReplyDTO.getUserCodeFk() +
+					" modified successfully."
+			);
+		} else {
+			result.put(
+				"message",
+				"Failed to modify reply."
+			);
+		}
+		return ResponseEntity
+			.status(HttpStatus.OK)
+			.body(result);
+	}
+
+	@DeleteMapping("/reply/{replyCodePk}/delete")
+	public ResponseEntity<Map<String, String>> deleteReply(@PathVariable("replyCodePk") int replyCodePk) {
+		String returnedMessage = replyService.deleteReply(replyCodePk);
+		Map<String, String> result = new HashMap<>();
+
+		result.put("message", returnedMessage);
+		return ResponseEntity.status(HttpStatus.OK).body(result);
 	}
 }

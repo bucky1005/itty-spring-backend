@@ -10,4 +10,8 @@ public interface ReplyService {
 	List<ReplyDTO> selectAllReplyByUserCodeFk(int userCodeFk);
 
 	ReplyDTO registReply(ReplyDTO requestReplyDTO);
+
+	ReplyDTO modifyReply(ReplyDTO requestReplyDTO, int replyCodePk);
+
+	String deleteReply(int replyCodePk);
 }

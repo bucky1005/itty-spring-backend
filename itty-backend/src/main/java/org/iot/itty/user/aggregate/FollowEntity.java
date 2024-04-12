@@ -1,4 +1,4 @@
-package org.iot.itty.article.aggregate;
+package org.iot.itty.user.aggregate;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -7,23 +7,24 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
+import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
-@Table(name = "like_tb")
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Getter
-public class LikeEntity {
+@Table(name = "follow_tb")
+@Data
+public class FollowEntity {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "like_code_pk")
-	private Integer likeCodePk;
+	@Column(name = "follow_code_pk")
+	private Integer followCodePk;
 
-	@Column(name = "user_code_fk")
-	private Integer userCodeFk;
+	@Column(name = "follower_code_fk")
+	private Integer followerCodeFk;
 
-	@Column(name = "reply_code_fk")
-	private Integer replyCodeFk;
+	@Column(name = "followee_code_fk")
+	private Integer followeeCodeFk;
 }
