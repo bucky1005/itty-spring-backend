@@ -36,8 +36,8 @@ public class FollowController {
 		this.followService = followService;
 	}
 
-	@GetMapping("user/{userCodePk}/follower")
-	public ResponseEntity<List<ResponseFollower>> selectAllFollower(@PathVariable("userCodePk") int userCodePk) {
+	@GetMapping("/follow/{userCodePk}/followers")
+	public ResponseEntity<List<ResponseFollower>> selectAllFollowers(@PathVariable("userCodePk") int userCodePk) {
 		List<FollowDTO> followerDTOList = followService.selectAllFollower(userCodePk);
 		List<UserDTO> userDTOList = userService.selectAllFollowerUser(followerDTOList);
 
@@ -47,8 +47,8 @@ public class FollowController {
 			.toList());
 	}
 
-	@GetMapping("user/{userCodePk}/following")
-	public ResponseEntity<List<ResponseFollowing>> selectAllFollowing(@PathVariable("userCodePk") int userCodePk) {
+	@GetMapping("/follow/{userCodePk}/followings")
+	public ResponseEntity<List<ResponseFollowing>> selectAllFollowings(@PathVariable("userCodePk") int userCodePk) {
 		List<FollowDTO> followingDTOList = followService.selectAllFollowing(userCodePk);
 		List<UserDTO> userDTOList = userService.selectAllFollowingUser(followingDTOList);
 
@@ -58,8 +58,8 @@ public class FollowController {
 			.toList());
 	}
 
-	@PostMapping("/following/{userCodePk}/{followeeCodeFk}")
-	public ResponseEntity<ResponseFollow> addFollowing(
+	@PostMapping("/follow/{userCodePk}/{followeeCodeFk}")
+	public ResponseEntity<ResponseFollow> registFollowing(
 		@PathVariable("userCodePk") int userCodePk,
 		@PathVariable("followeeCodeFk") int followeeCodeFk
 	)
@@ -72,8 +72,8 @@ public class FollowController {
 		return ResponseEntity.status(HttpStatus.CREATED).body(modelMapper.map(responseFollowDTO, ResponseFollow.class));
 	}
 
-	@DeleteMapping("/unfollow/{userCodePk}/{followeeCodeFk}")
-	public ResponseEntity<ResponseUnFollow> unFollow(
+	@DeleteMapping("/follow/{userCodePk}/{followeeCodeFk}")
+	public ResponseEntity<ResponseUnFollow> deleteFollowing(
 		@PathVariable("userCodePk") int userCodePk,
 		@PathVariable("followeeCodeFk") int followeeCodeFk
 	)
