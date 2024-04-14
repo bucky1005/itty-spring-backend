@@ -93,6 +93,7 @@ public class LoginControllerTests {
 		System.out.println("UserDTO userName: " + capturedUserDTO.getUserName());
 		System.out.println("UserDTO userPhoneNumber: " + capturedUserDTO.getUserPhoneNumber());
 		System.out.println("UserDTO userNickname: " + capturedUserDTO.getUserNickname());
+
 	}
 
 	@Test
