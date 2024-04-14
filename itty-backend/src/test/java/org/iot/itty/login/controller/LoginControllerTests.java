@@ -14,26 +14,27 @@ import org.mockito.ArgumentCaptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.transaction.annotation.Transactional;
 
 @ExtendWith(MockitoExtension.class)
 @SpringBootTest
+@Transactional	// MockBean을 사용하지 않고 실제 DB로 테스트 할 때 테스트 내용이 반영되지 않도록 함
 @AutoConfigureMockMvc
 public class LoginControllerTests {
 
 	@Autowired
 	private MockMvc mockMvc;
 
-	@MockBean
+	@Autowired
 	private UserRepository userRepository;
 
-	@MockBean
+	@Autowired
 	private LoginService loginService;
 
-	@MockBean
+	@Autowired
 	private LoginServiceImpl loginServiceImpl;
 
 	@Test
@@ -92,20 +93,19 @@ public class LoginControllerTests {
 		System.out.println("UserDTO userName: " + capturedUserDTO.getUserName());
 		System.out.println("UserDTO userPhoneNumber: " + capturedUserDTO.getUserPhoneNumber());
 		System.out.println("UserDTO userNickname: " + capturedUserDTO.getUserNickname());
-
 	}
 
 	@Test
 	@DisplayName("회원 탈퇴 성공 테스트")
-	public void	withdrawalUserMethodTest() {
+	public void	withdrawalUserTest_Success() {
 
 		//given
 		UserDTO userDTO = new UserDTO();
-		userDTO.setUserEmail("user1@example.com");
-		userDTO.setUserPassword("password1");
-		userDTO.setUserName("username1");
-		userDTO.setUserPhoneNumber("123456789");
-		userDTO.setUserNickname("user1");
+		userDTO.setUserEmail("test019@example.com");
+		userDTO.setUserNickname("test");
+		userDTO.setUserPassword("test");
+		userDTO.setUserName("testname");
+		userDTO.setUserPhoneNumber("010-1234-1234");
 
 		//when
 		boolean result = loginService.withdrawalUser(userDTO);
@@ -120,12 +120,11 @@ public class LoginControllerTests {
 
 		//given(DB에서 이미 탈퇴한 회원 정보를 세팅)
 		UserDTO userDTO = new UserDTO();
-		userDTO.setUserEmail("user10@example.com");
-		userDTO.setUserNickname("user10");
-		userDTO.setUserPassword("password10");
-		userDTO.setUserName("username1");
-		userDTO.setUserPhoneNumber("123456789");
-		userDTO.setUserNickname("user1");
+		userDTO.setUserEmail("test018@example.com");
+		userDTO.setUserNickname("test");
+		userDTO.setUserPassword("test");
+		userDTO.setUserName("testname");
+		userDTO.setUserPhoneNumber("010-1234-1234");
 
 		//when
 		boolean result = loginService.withdrawalUser(userDTO);
