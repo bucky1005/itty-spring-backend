@@ -5,6 +5,7 @@ import static org.mockito.Mockito.*;
 
 import org.iot.itty.dto.UserDTO;
 import org.iot.itty.login.service.LoginService;
+import org.iot.itty.login.service.LoginServiceImpl;
 import org.iot.itty.login.vo.RequestRegist;
 import org.iot.itty.user.aggregate.UserEntity;
 import org.iot.itty.user.repository.UserRepository;
@@ -32,6 +33,9 @@ public class LoginControllerTests {
 
 	@MockBean
 	private LoginService loginService;
+
+	@MockBean
+	private LoginServiceImpl loginServiceImpl;
 
 	@Test
 	@DisplayName("회원 가입 성공 테스트")
@@ -104,9 +108,29 @@ public class LoginControllerTests {
 		userDTO.setUserNickname("user1");
 
 		//when
-		UserEntity user = userRepository.findByUserEmail(userDTO.getUserEmail());
+		boolean result = loginService.withdrawalUser(userDTO);
 
 		//then
+		assertThat(result).isTrue();
+	}
 
+	@Test
+	@DisplayName("회원 탈퇴 실패 테스트")
+	public void withdrawalUserMethodFailTest() {
+
+		//given(DB에서 이미 탈퇴한 회원 정보를 세팅)
+		UserDTO userDTO = new UserDTO();
+		userDTO.setUserEmail("user10@example.com");
+		userDTO.setUserNickname("user10");
+		userDTO.setUserPassword("password10");
+		userDTO.setUserName("username1");
+		userDTO.setUserPhoneNumber("123456789");
+		userDTO.setUserNickname("user1");
+
+		//when
+		boolean result = loginService.withdrawalUser(userDTO);
+
+		//then
+		assertThat(result).isFalse();
 	}
 }
