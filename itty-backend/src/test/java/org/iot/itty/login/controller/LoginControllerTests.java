@@ -6,6 +6,7 @@ import static org.mockito.Mockito.*;
 import org.iot.itty.dto.UserDTO;
 import org.iot.itty.login.service.LoginService;
 import org.iot.itty.login.vo.RequestRegist;
+import org.iot.itty.user.aggregate.UserEntity;
 import org.iot.itty.user.repository.UserRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -88,5 +89,24 @@ public class LoginControllerTests {
 		System.out.println("UserDTO userName: " + capturedUserDTO.getUserName());
 		System.out.println("UserDTO userPhoneNumber: " + capturedUserDTO.getUserPhoneNumber());
 		System.out.println("UserDTO userNickname: " + capturedUserDTO.getUserNickname());
+	}
+
+	@Test
+	@DisplayName("회원 탈퇴 성공 테스트")
+	public void	withdrawalUserMethodTest() {
+
+		//given
+		UserDTO userDTO = new UserDTO();
+		userDTO.setUserEmail("user1@example.com");
+		userDTO.setUserPassword("password1");
+		userDTO.setUserName("username1");
+		userDTO.setUserPhoneNumber("123456789");
+		userDTO.setUserNickname("user1");
+
+		//when
+		UserEntity user = userRepository.findByUserEmail(userDTO.getUserEmail());
+
+		//then
+
 	}
 }
