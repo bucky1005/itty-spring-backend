@@ -40,13 +40,13 @@ public class LoginControllerTests {
 	@Test
 	@DisplayName("회원 가입 성공 테스트")
 	public void testRegistUser_Success() {
-		// 준비(DB에 존재하지 않는 값으로 입력)
+		// given(DB에 존재하지 않는 값으로 입력)
 		RequestRegist requestRegist = new RequestRegist();
-		requestRegist.setUserEmail("test001@example.com");
-		requestRegist.setUserPassword("password");
-		requestRegist.setUserName("testName");
-		requestRegist.setUserNickname("nickName");
-		requestRegist.setUserPhoneNumber("123456789");
+		requestRegist.setUserEmail("newUserTest@example.com");
+		requestRegist.setUserPassword("test");
+		requestRegist.setUserName("testname");
+		requestRegist.setUserNickname("test");
+		requestRegist.setUserPhoneNumber("010-1234-1234");
 
 		UserDTO userDTO = new UserDTO();
 		userDTO.setUserEmail(requestRegist.getUserEmail());
@@ -55,15 +55,37 @@ public class LoginControllerTests {
 		userDTO.setUserNickname(requestRegist.getUserNickname());
 		userDTO.setUserPhoneNumber(requestRegist.getUserPhoneNumber());
 
-		// 아이디 중복 시 false 반환
-		when(userRepository.existsByUserEmail(userDTO.getUserEmail())).thenReturn(false);
-
 		// When
 		int userCode = loginService.registUser(userDTO);
 		System.out.println("userCode: " + userCode);
 
 		// Then
 		assertThat(userCode).isNotEqualTo(null);
+	}
+
+	@Test
+	@DisplayName("회원 가입 실패 테스트")
+	public void registUserTest_fail() {
+		// given(DB에 존재하는 값으로 입력)
+		RequestRegist requestRegist = new RequestRegist();
+		requestRegist.setUserEmail("test021@example.com");
+		requestRegist.setUserPassword("test");
+		requestRegist.setUserName("testnamete");
+		requestRegist.setUserNickname("test");
+		requestRegist.setUserPhoneNumber("010-1234-1234");
+
+		UserDTO userDTO = new UserDTO();
+		userDTO.setUserEmail(requestRegist.getUserEmail());
+		userDTO.setUserPassword(requestRegist.getUserPassword());
+		userDTO.setUserName(requestRegist.getUserName());
+		userDTO.setUserNickname(requestRegist.getUserNickname());
+		userDTO.setUserPhoneNumber(requestRegist.getUserPhoneNumber());
+
+		// when
+		boolean existUser = userRepository.existsByUserEmail(userDTO.getUserEmail());
+
+		//then
+		assertThat(existUser).isTrue();
 	}
 
 	@Test
