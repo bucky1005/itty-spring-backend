@@ -7,7 +7,6 @@ import org.iot.itty.dto.UserDTO;
 import org.iot.itty.login.service.LoginService;
 import org.iot.itty.login.service.LoginServiceImpl;
 import org.iot.itty.login.vo.RequestRegist;
-import org.iot.itty.user.aggregate.UserEntity;
 import org.iot.itty.user.repository.UserRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
