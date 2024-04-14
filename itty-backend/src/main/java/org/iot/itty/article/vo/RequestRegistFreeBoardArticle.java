@@ -8,3 +8,5 @@ public class RequestRegistFreeBoardArticle {
 	private String articleContent;
 	private int userCodeFk;
 }
+
+// request
