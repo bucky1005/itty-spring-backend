@@ -2,9 +2,11 @@ package org.iot.itty.login.service;
 
 import java.util.ArrayList;
 
+import org.apache.coyote.Response;
 import org.iot.itty.dto.UserDTO;
 import org.iot.itty.login.redis.RedisConfig;
 import org.iot.itty.login.redis.TokenRepository;
+import org.iot.itty.login.vo.ResponseRegist;
 import org.iot.itty.user.aggregate.UserEntity;
 import org.iot.itty.user.repository.UserRepository;
 import org.modelmapper.ModelMapper;
@@ -39,7 +41,7 @@ public class LoginServiceImpl implements LoginService {
 
 	/* 회원 가입 */
 	@Override
-	public int registUser(UserDTO userDTO) {
+	public ResponseRegist registUser(UserDTO userDTO) {
 
 		String userEmail = userDTO.getUserEmail();
 		String userPassword = userDTO.getUserPassword();
@@ -48,10 +50,26 @@ public class LoginServiceImpl implements LoginService {
 		String userNickname = userDTO.getUserNickname();
 
 		// 아이디 중복 체크
-		boolean isExist = userRepository.existsByUserEmail(userEmail);
+		boolean isEmailExists = userRepository.existsByUserEmail(userEmail);
 
-		if (isExist) {
-			throw new IllegalStateException("'" + userEmail + "'는(은) 이미 존재하는 사용자 입니다.");
+		// 닉네임 중복 체크
+		boolean isNickNameExists = userRepository.existsByUserNickname(userNickname);
+		System.out.println("닉네임 중복체크: " + isNickNameExists);
+
+		ResponseRegist responseRegist = new ResponseRegist();
+
+		if (isEmailExists) {
+			responseRegist.setStatus("이메일 중복");
+			responseRegist.setMessage("'" + userEmail + "' 는(은) 이미 존재하는 사용자 입니다.");
+
+			return responseRegist;
+		}
+
+		if (isNickNameExists) {
+			responseRegist.setStatus("닉네임 중복");
+			responseRegist.setMessage("이미 사용 중인 닉네임 입니다.");
+
+			return responseRegist;
 		}
 
 		UserEntity data = new UserEntity();
@@ -66,7 +84,13 @@ public class LoginServiceImpl implements LoginService {
 		data.setUserIntroduction("내 소개가 아직 없습니다.");
 
 		userRepository.save(data);
-		return data.getUserCodePk();
+
+		responseRegist.setUserCodePk(data.getUserCodePk());
+		responseRegist.setUserEmail(userEmail);
+		responseRegist.setStatus("가입 성공");
+		responseRegist.setMessage("회원 가입 성공");
+
+		return responseRegist;
 	}
 
 	/* 회원 탈퇴 */
