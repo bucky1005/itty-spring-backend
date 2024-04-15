@@ -49,27 +49,24 @@ public class LoginController {
 		modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
 		UserDTO userDTO = modelMapper.map(requestRegist, UserDTO.class);
 
-		int userCode = loginService.registUser(userDTO);
+		ResponseRegist responseRegist = loginService.registUser(userDTO);
 
-		ResponseRegist responseRegist = new ResponseRegist();
-		responseRegist.setUserCodePk(userCode);
-		responseRegist.setUserEmail(requestRegist.getUserEmail());
-		responseRegist.setMessage("회원 가입 성공");
+		String result = responseRegist.getStatus();
 
-		return ResponseEntity.status(HttpStatus.CREATED).body(responseRegist);
+		// case result
+		//
+		// if (result) {
+		// 	responseRegist.setUserEmail(requestRegist.getUserEmail());
+		// 	responseRegist.setMessage("회원 가입 성공");
+		//
+		// 	return ResponseEntity.status(HttpStatus.CREATED).body(responseRegist);
+		// }
+
+		responseRegist.setMessage("");
+
+		return ResponseEntity.status(HttpStatus.CONFLICT).body(responseRegist);
+
 	}
-
-	// /* 로그아웃 */
-	// @PostMapping("/user/logout")
-	// public ResponseEntity<Void> logout(@RequestHeader String Authorization) {
-	//
-	// 	System.out.println("logout 요청");
-	// 	System.out.println("accessToken: " + Authorization);
-	// 	// String userEmail = jwtUtil.getUserEmail(accessToken);
-	//
-	// 	// System.out.println("userEmail: " + userEmail);
-	// 	return null;
-	// }
 
 	/* 토큰 검증 실패 시 실행되는 api */
 	@GetMapping("/error/unauthorized")
