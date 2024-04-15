@@ -64,11 +64,16 @@ public class WebSecurityConfig {
 				@Override
 				public CorsConfiguration getCorsConfiguration(HttpServletRequest request) {
 					List<String> allowStringList = Collections.singletonList("*");
+					List<String> exposeHeaderList = List.of(
+							"Access-Token", "User-Code-Pk", "User-Email", "Refresh-Token"
+					);
+					
 					CorsConfiguration configuration = new CorsConfiguration();
 
 					configuration.setAllowedOriginPatterns(allowStringList);
 					configuration.setAllowedMethods(allowStringList);
 					configuration.setAllowedHeaders(allowStringList);
+					configuration.setExposedHeaders(exposeHeaderList);
 					configuration.setAllowCredentials(true);
 					configuration.setMaxAge(3600L);
 
