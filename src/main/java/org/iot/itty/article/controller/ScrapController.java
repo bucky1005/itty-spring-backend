@@ -41,11 +41,14 @@ public class ScrapController {
 		List<TrendArticleDTO> scrappedTrendArticleDTOList = scrapService.selectAllScrapByUserCodeFk(userCodeFk);
 		List<ResponseSelectAllScrapByUserCodeFk> responseSelectAllScrapByUserCodeFkList = new ArrayList<>();
 
-		return ResponseEntity.status(HttpStatus.OK).body(scrappedTrendArticleDTOList
-			.stream()
-			.map(TrendArticleDTO -> modelMapper.map(TrendArticleDTO, ResponseSelectAllScrapByUserCodeFk.class))
-			.toList()
-		);
+		if (!scrappedTrendArticleDTOList.isEmpty()) {
+			return ResponseEntity.status(HttpStatus.OK).body(scrappedTrendArticleDTOList
+				.stream()
+				.map(TrendArticleDTO -> modelMapper.map(TrendArticleDTO, ResponseSelectAllScrapByUserCodeFk.class))
+				.toList()
+			);
+		}
+		return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
 	}
 
 	@PostMapping("/scrap")
