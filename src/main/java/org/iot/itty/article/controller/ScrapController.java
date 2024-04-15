@@ -54,18 +54,20 @@ public class ScrapController {
 	@PostMapping("/scrap")
 	public ResponseEntity<Map<String, String>> registScrap(@RequestBody RequestAddScrap requestAddScrap) {
 
-		ScrapDTO responseScrapDTO = scrapService.addScrap(requestAddScrap);
 		Map<String, String> result = new HashMap<>();
-
-		if (responseScrapDTO != null) {
+		try {
+			ScrapDTO responseScrapDTO = scrapService.addScrap(requestAddScrap);
 			result.put("message",
 				"scrapped article #" + responseScrapDTO.getTrendArticleCodeFk() + " successfully.");
-		} else {
+
+			return ResponseEntity.status(HttpStatus.CREATED).body(result);
+
+		} catch (Exception e) {
 			result.put("message",
 				"Failed to scrap.");
-		}
 
-		return ResponseEntity.status(HttpStatus.CREATED).body(result);
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(result);
+		}
 	}
 
 	@DeleteMapping("/scrap")
@@ -73,8 +75,14 @@ public class ScrapController {
 		String returnedMessage = scrapService.deleteScrap(requestDeleteScrap);
 
 		Map<String, String> result = new HashMap<>();
-		result.put("message", returnedMessage);
 
-		return ResponseEntity.status(HttpStatus.OK).body(result);
+		if (returnedMessage.equals("Successfully cancelled scrap from trend article.")) {
+			result.put("message", returnedMessage);
+
+			return ResponseEntity.status(HttpStatus.OK).body(result);
+		} else {
+
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(result);
+		}
 	}
 }
