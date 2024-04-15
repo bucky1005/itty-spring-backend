@@ -81,12 +81,15 @@ public class ArticleController {
 	/* 게시글코드(article_code_pk) 로 자유게시판 게시글 한개 조회 */
 	@GetMapping("/article/bulletin/{articleCodePk}")
 	public ResponseEntity<ResponseArticle> selectBulletinArticleByArticleCodePk(@PathVariable("articleCodePk") int articleCodePk) {
-		ArticleDTO articleDTO = articleService.selectFreeBoardArticleByArticleCodePk(articleCodePk);
-		articleDTO.setReplyDTOList(replyService.selectReplyByArticleCodeFk(articleCodePk));
 
-		// mapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
-		return ResponseEntity.status(HttpStatus.OK).body(mapper.map(articleDTO, ResponseArticle.class));
-
+		try {
+			ArticleDTO articleDTO = articleService.selectFreeBoardArticleByArticleCodePk(articleCodePk);
+			articleDTO.setReplyDTOList(replyService.selectReplyByArticleCodeFk(articleCodePk));
+			// mapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
+			return ResponseEntity.status(HttpStatus.OK).body(mapper.map(articleDTO, ResponseArticle.class));
+		} catch (Exception e) {
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+		}
 	}
 
 	/* 회원코드(user_code_fk) 로 회원별 작성된 게시글 조회 */
@@ -95,14 +98,15 @@ public class ArticleController {
 		List<ArticleDTO> articleDTOList = articleService.selectAllArticleByUserCodeFk(userCodeFk);
 		List<ResponseSelectAllArticleByUserCodeFk> responseSelectAllArticleByUserCodeFkList = new ArrayList<>();
 
-		if (articleDTOList != null) {
+		if (!articleDTOList.isEmpty()) {
 			responseSelectAllArticleByUserCodeFkList = articleDTOList
 				.stream()
 				.peek(articleDTO -> articleDTO.setReplyDTOList(replyService.selectReplyByArticleCodeFk(articleDTO.getArticleCodePk())))
 				.map(ArticleDTO -> mapper.map(ArticleDTO, ResponseSelectAllArticleByUserCodeFk.class))
 				.toList();
+			return ResponseEntity.status(HttpStatus.OK).body(responseSelectAllArticleByUserCodeFkList);
 		}
-		return ResponseEntity.status(HttpStatus.OK).body(responseSelectAllArticleByUserCodeFkList);
+		return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
 	}
 
 	/* 자유게시판 게시글 등록 */
