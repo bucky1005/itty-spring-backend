@@ -53,19 +53,17 @@ public class LoginController {
 
 		String result = responseRegist.getStatus();
 
-		// case result
-		//
-		// if (result) {
-		// 	responseRegist.setUserEmail(requestRegist.getUserEmail());
-		// 	responseRegist.setMessage("회원 가입 성공");
-		//
-		// 	return ResponseEntity.status(HttpStatus.CREATED).body(responseRegist);
-		// }
-
-		responseRegist.setMessage("");
-
-		return ResponseEntity.status(HttpStatus.CONFLICT).body(responseRegist);
-
+		switch (result) {
+			case "이메일 중복":
+				System.out.println("result:" + responseRegist);
+				return ResponseEntity.status(HttpStatus.CONFLICT).body(responseRegist);
+			case "닉네임 중복":
+				System.out.println("result:" + responseRegist);
+				return ResponseEntity.status(HttpStatus.CONFLICT).body(responseRegist);
+			default:
+				System.out.println("result:" + responseRegist);
+				return ResponseEntity.status(HttpStatus.CREATED).body(responseRegist);
+		}
 	}
 
 	/* 토큰 검증 실패 시 실행되는 api */

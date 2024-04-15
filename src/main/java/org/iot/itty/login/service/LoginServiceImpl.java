@@ -54,6 +54,7 @@ public class LoginServiceImpl implements LoginService {
 
 		// 닉네임 중복 체크
 		boolean isNickNameExists = userRepository.existsByUserNickname(userNickname);
+		System.out.println("닉네임 중복체크: " + isNickNameExists);
 
 		ResponseRegist responseRegist = new ResponseRegist();
 
@@ -62,9 +63,13 @@ public class LoginServiceImpl implements LoginService {
 			responseRegist.setMessage("'" + userEmail + "' 는(은) 이미 존재하는 사용자 입니다.");
 
 			return responseRegist;
-		} else if (isNickNameExists) {
+		}
+
+		if (isNickNameExists) {
 			responseRegist.setStatus("닉네임 중복");
 			responseRegist.setMessage("이미 사용 중인 닉네임 입니다.");
+
+			return responseRegist;
 		}
 
 		UserEntity data = new UserEntity();
