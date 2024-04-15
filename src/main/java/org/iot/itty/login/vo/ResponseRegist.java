@@ -6,5 +6,6 @@ import lombok.Data;
 public class ResponseRegist {
 	int userCodePk;
 	String userEmail;
+	String status;
 	String message;
 }
