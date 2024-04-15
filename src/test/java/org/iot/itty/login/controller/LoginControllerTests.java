@@ -55,6 +55,7 @@ public class LoginControllerTests {
 
 		// When
 		int userCode = loginService.registUser(userDTO);
+
 		System.out.println("userCode: " + userCode);
 
 		// Then
