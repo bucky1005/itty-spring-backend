@@ -36,7 +36,6 @@ public class LikeController {
 	private final ModelMapper modelMapper;
 	private final LikeService likeService;
 
-
 	@Autowired
 	public LikeController(ModelMapper modelMapper, LikeService likeService) {
 		this.modelMapper = modelMapper;
@@ -52,73 +51,90 @@ public class LikeController {
 
 		/* 해당 회원이 좋아요를 누른 게시글 리스트 가져오기*/
 		List<ArticleDTO> articleDTOList = likeService.selectAllArticleLikedbyUserCodeFk(userCodeFk);
-		List<ResponseSelectAllReplyLikedByUserCodeFk> responseSelectAllReplyLikedByUserCodeFkList;
-		List<ResponseSelectAllArticleLikedByUserCodeFk> responseSelectAllArticleLikedByUserCodeFkList;
 
-		Map<String, Object> result = new HashMap<>();
+		if (!replyDTOList.isEmpty() && !articleDTOList.isEmpty()) {
+			List<ResponseSelectAllReplyLikedByUserCodeFk> responseSelectAllReplyLikedByUserCodeFkList;
+			List<ResponseSelectAllArticleLikedByUserCodeFk> responseSelectAllArticleLikedByUserCodeFkList;
 
-		responseSelectAllReplyLikedByUserCodeFkList = replyDTOList
-			.stream()
-			.map(ReplyDTO -> modelMapper.map(ReplyDTO, ResponseSelectAllReplyLikedByUserCodeFk.class)).toList();
+			Map<String, Object> result = new HashMap<>();
 
-		responseSelectAllArticleLikedByUserCodeFkList = articleDTOList
-			.stream()
-			.map(ArticleDTO -> modelMapper.map(ArticleDTO, ResponseSelectAllArticleLikedByUserCodeFk.class)).toList();
+			responseSelectAllReplyLikedByUserCodeFkList = replyDTOList
+				.stream()
+				.map(ReplyDTO -> modelMapper.map(ReplyDTO, ResponseSelectAllReplyLikedByUserCodeFk.class)).toList();
 
-		result.put("userCode", userCodeFk);
-		result.put("likedArticleList", responseSelectAllArticleLikedByUserCodeFkList);
-		result.put("likedReplyList", responseSelectAllReplyLikedByUserCodeFkList);
+			responseSelectAllArticleLikedByUserCodeFkList = articleDTOList
+				.stream()
+				.map(ArticleDTO -> modelMapper.map(ArticleDTO, ResponseSelectAllArticleLikedByUserCodeFk.class))
+				.toList();
 
-		return ResponseEntity.status(HttpStatus.OK).body(result);
+			result.put("userCode", userCodeFk);
+			result.put("likedArticleList", responseSelectAllArticleLikedByUserCodeFkList);
+			result.put("likedReplyList", responseSelectAllReplyLikedByUserCodeFkList);
+
+			return ResponseEntity.status(HttpStatus.OK).body(result);
+		}
+		return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
 	}
 
 	@PostMapping("/article/bulletin/like")
-	public ResponseEntity<Map<String, String>> registArticleLike(@RequestBody RequestAddArticleLike requestAddArticleLike) {
+	public ResponseEntity<Map<String, String>> registArticleLike(
+		@RequestBody RequestAddArticleLike requestAddArticleLike) {
 
-		ArticleLikeDTO responseArticleLikeDTO = likeService.addArticleLike(requestAddArticleLike);
 		Map<String, String> result = new HashMap<>();
 
-		if (responseArticleLikeDTO != null) {
+		try {
+			ArticleLikeDTO responseArticleLikeDTO = likeService.addArticleLike(requestAddArticleLike);
 			result.put("message",
 				"added like to article #" + responseArticleLikeDTO.getArticleCodeFk() + " successfully.");
-		} else {
+			return ResponseEntity.status(HttpStatus.CREATED).body(result);
+		} catch (Exception e) {
 			result.put("message",
 				"Failed to add like.");
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(result);
 		}
-
-		return ResponseEntity.status(HttpStatus.CREATED).body(result);
 	}
 
 	@DeleteMapping("/article/bulletin/like")
-	public ResponseEntity<Map<String, String>> deleteArticleLike(@RequestBody RequestDeleteArticleLike requestDeleteArticleLike) {
+	public ResponseEntity<Map<String, String>> deleteArticleLike(
+		@RequestBody RequestDeleteArticleLike requestDeleteArticleLike) {
+		Map<String, String> result = new HashMap<>();
 		String returnedMessage = likeService.deleteArticleLike(requestDeleteArticleLike);
 
-		Map<String, String> result = new HashMap<>();
-		result.put("message", returnedMessage);
-
-		return ResponseEntity.status(HttpStatus.OK).body(result);
+		if(returnedMessage.equals("Successfully deleted like from article.")) {
+			result.put("message", returnedMessage);
+			return ResponseEntity.status(HttpStatus.OK).body(result);
+		} else {
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+		}
 	}
 
 	@PostMapping("/reply/like")
 	public ResponseEntity<Map<String, String>> registReplyLike(@RequestBody RequestAddReplyLike requestAddReplyLike) {
-		ReplyLikeDTO responseReplyLikeDTO = likeService.addReplyLike(requestAddReplyLike);
 		Map<String, String> result = new HashMap<>();
 
-		if (responseReplyLikeDTO != null) {
+		try {
+			ReplyLikeDTO responseReplyLikeDTO = likeService.addReplyLike(requestAddReplyLike);
 			result.put("message", "Successfully added like to reply #" + responseReplyLikeDTO.getReplyCodeFk());
-		} else {
+			return ResponseEntity.status(HttpStatus.CREATED).body(result);
+		} catch (Exception e) {
 			result.put("message", "Failed to add like to reply");
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(result);
 		}
-		return ResponseEntity.status(HttpStatus.CREATED).body(result);
 	}
 
 	@DeleteMapping("/reply/like")
-	public ResponseEntity<Map<String, String>> deleteReplyLike(@RequestBody RequestDeleteReplyLike requestDeleteReplyLike) {
+	public ResponseEntity<Map<String, String>> deleteReplyLike(
+		@RequestBody RequestDeleteReplyLike requestDeleteReplyLike) {
 		String returnedMessage = likeService.deleteReplyLike(requestDeleteReplyLike);
 
 		Map<String, String> result = new HashMap<>();
-		result.put("message", returnedMessage);
+		if(returnedMessage.equals("Successfully deleted like from reply.")){
+			result.put("message", returnedMessage);
 
-		return ResponseEntity.status(HttpStatus.OK).body(result);
+			return ResponseEntity.status(HttpStatus.OK).body(result);
+		}
+		else {
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+		}
 	}
 }
