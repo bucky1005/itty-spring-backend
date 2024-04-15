@@ -52,15 +52,15 @@ public class ReplyController {
 		// mapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
 		List<ResponseSelectReplyByArticleCodeFk> responseSelectReplyByArticleCodeFkList = new ArrayList<>();
 
-		if (replyDTOList != null) {
+		if (!replyDTOList.isEmpty()) {
 			responseSelectReplyByArticleCodeFkList = replyDTOList
 				.stream()
 				.peek(replyDTO -> replyDTO.setUserDTO(userService.selectUserByUserCodePk(replyDTO.getUserCodeFk())))
 				.map(ReplyDTO -> mapper.map(ReplyDTO, ResponseSelectReplyByArticleCodeFk.class))
 				.toList();
+			return ResponseEntity.status(HttpStatus.OK).body(responseSelectReplyByArticleCodeFkList);
 		}
-
-		return ResponseEntity.status(HttpStatus.OK).body(responseSelectReplyByArticleCodeFkList);
+		return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
 	}
 
 	/* 회원별 댓글 list 조회 */
@@ -69,14 +69,15 @@ public class ReplyController {
 		List<ReplyDTO> replyDTOList = replyService.selectAllReplyByUserCodeFk(userCodeFk);
 		List<ResponseSelectAllReplyByUserCodeFk> responseSelectAllReplyByUserCodeFkList = new ArrayList<>();
 
-		if (replyDTOList != null) {
+		if (!replyDTOList.isEmpty()) {
 			responseSelectAllReplyByUserCodeFkList = replyDTOList
 				.stream()
 				.map(ReplyDTO -> mapper.map(ReplyDTO, ResponseSelectAllReplyByUserCodeFk.class))
 				.toList();
-		}
+			return ResponseEntity.status(HttpStatus.OK).body(responseSelectAllReplyByUserCodeFkList);
 
-		return ResponseEntity.status(HttpStatus.OK).body(responseSelectAllReplyByUserCodeFkList);
+		}
+		return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
 	}
 
 	/* 댓글 등록 */
@@ -90,12 +91,12 @@ public class ReplyController {
 			replyService.registReply(requestReplyDTO);
 			responseRegistReply.setResultCode(201);
 			responseRegistReply.setMessage("댓글 등록 성공");
+			return ResponseEntity.status(HttpStatus.CREATED).body(responseRegistReply);
 		} catch (Exception e) {
 			responseRegistReply.setResultCode(500);
 			responseRegistReply.setMessage(e.getMessage());
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
 		}
-
-		return ResponseEntity.status(HttpStatus.CREATED).body(responseRegistReply);
 	}
 
 	/* 댓글 수정 */
@@ -114,23 +115,28 @@ public class ReplyController {
 					" written by user #" + responseReplyDTO.getUserCodeFk() +
 					" modified successfully."
 			);
+			return ResponseEntity.status(HttpStatus.OK).body(result);
 		} else {
 			result.put(
 				"message",
 				"Failed to modify reply."
 			);
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
 		}
-		return ResponseEntity
-			.status(HttpStatus.OK)
-			.body(result);
 	}
 
 	@DeleteMapping("/reply")
 	public ResponseEntity<Map<String, String>> deleteReply(@RequestBody RequestDeleteReply requestDeleteReply) {
 		String returnedMessage = replyService.deleteReply(requestDeleteReply.getReplyCodePk());
 		Map<String, String> result = new HashMap<>();
-
+		if(returnedMessage.equals("Deleted reply #" + requestDeleteReply.getReplyCodePk() + " successfully.")){
+			result.put(
+				"message",
+				returnedMessage
+			);
+			return ResponseEntity.status(HttpStatus.OK).body(result);
+		}
 		result.put("message", returnedMessage);
-		return ResponseEntity.status(HttpStatus.OK).body(result);
+		return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
 	}
 }
