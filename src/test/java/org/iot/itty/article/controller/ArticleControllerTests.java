@@ -11,13 +11,14 @@ import java.util.List;
 import org.assertj.core.api.Assertions;
 import org.iot.itty.article.aggregate.ArticleEntity;
 import org.iot.itty.article.service.ArticleService;
+import org.iot.itty.article.vo.RequestDeleteBulletinArticle;
 import org.iot.itty.article.vo.RequestModifyFreeBoardArticle;
 import org.iot.itty.article.vo.RequestRegistFreeBoardArticle;
 import org.iot.itty.article.vo.ResponseArticle;
+import org.iot.itty.article.vo.ResponseDeleteFreeBoardArticle;
 import org.iot.itty.article.vo.ResponseModifyFreeBoardArticle;
 import org.iot.itty.article.vo.ResponseRegistFreeBoardArticle;
 import org.iot.itty.article.vo.ResponseSelectAllArticleByUserCodeFk;
-import org.iot.itty.config.CustomMapper;
 import org.iot.itty.dto.ArticleDTO;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -102,6 +103,22 @@ class ArticleControllerTests {
 
 		// when
 		ResponseEntity<ResponseModifyFreeBoardArticle> response = articleController.modifyBulletinArticle(request);
+
+		// then
+		Assertions.assertThat(HttpStatus.OK).isEqualTo(response.getStatusCode());
+	}
+
+	@Test
+	@DisplayName("자유게시판 게시글 삭제 테스트")
+	public void deleteBulletinArticleTest() {
+
+		// given
+		RequestDeleteBulletinArticle request = RequestDeleteBulletinArticle.builder()
+			.articleCodePk(1)
+			.build();
+
+		// when
+		ResponseEntity<ResponseDeleteFreeBoardArticle> response = articleController.deleteBulletinArticle(request);
 
 		// then
 		Assertions.assertThat(HttpStatus.OK).isEqualTo(response.getStatusCode());
