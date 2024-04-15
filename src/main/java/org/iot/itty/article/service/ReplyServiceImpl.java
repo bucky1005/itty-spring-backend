@@ -82,12 +82,12 @@ public class ReplyServiceImpl implements ReplyService{
 	@Override
 	public String deleteReply(int replyCodePk) {
 		String message;
-		try {
+		if(!replyRepository.findById(replyCodePk).isEmpty()) {
 			replyRepository.deleteById(replyCodePk);
 			message = "Deleted reply #" + replyCodePk + " successfully.";
-		} catch (Exception e) {
-			message = e.getMessage();
+			return message;
 		}
-		return message;
+
+		return "No Reply Exists";
 	}
 }
