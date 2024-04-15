@@ -6,10 +6,13 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
+import java.util.Date;
 import java.util.List;
+import java.util.stream.Stream;
 
 import org.assertj.core.api.Assertions;
 import org.iot.itty.article.aggregate.ArticleEntity;
+import org.iot.itty.article.repository.ArticleRepository;
 import org.iot.itty.article.service.ArticleService;
 import org.iot.itty.article.vo.RequestDeleteBulletinArticle;
 import org.iot.itty.article.vo.RequestModifyFreeBoardArticle;
@@ -22,6 +25,7 @@ import org.iot.itty.article.vo.ResponseSelectAllArticleByUserCodeFk;
 import org.iot.itty.dto.ArticleDTO;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.provider.Arguments;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -41,20 +45,30 @@ class ArticleControllerTests {
 	private ArticleController articleController;
 
 	@Autowired
+	private ArticleService articleService;
+
+	@Autowired
+	private ArticleRepository articleRepository;
+
+	@Autowired
 	private ModelMapper modelMapper;
+
 
 	@Test
 	@DisplayName("자유게시글 한개 조회 테스트")
 	public void selectBulletinArticleByArticleCodePkTest() {
 
 		// given
-		int articleCodePk = 1;
+		int articleCodePk1 = 1;
+		int articleCodePk2 = 100;
 
 		// when
-		ResponseEntity<ResponseArticle> response = articleController.selectBulletinArticleByArticleCodePk(articleCodePk);
+		ResponseEntity<ResponseArticle> response1 = articleController.selectBulletinArticleByArticleCodePk(articleCodePk1);
+		ResponseEntity<ResponseArticle> response2 = articleController.selectBulletinArticleByArticleCodePk(articleCodePk2);
 
 		// then
-		Assertions.assertThat(HttpStatus.OK).isEqualTo(response.getStatusCode());
+		Assertions.assertThat(HttpStatus.OK).isEqualTo(response1.getStatusCode());
+		Assertions.assertThat(HttpStatus.NOT_FOUND).isEqualTo(response2.getStatusCode());
 	}
 
 	@Test
@@ -62,13 +76,16 @@ class ArticleControllerTests {
 	public void selectAllBulletinArticleByUserCodeFkTest() {
 
 		// given
-		int userCodeFk = 1;
+		int userCodeFk1 = 3;
+		int userCodeFk2 = 40;
 
 		// when
-		ResponseEntity<List<ResponseSelectAllArticleByUserCodeFk>> response = articleController.selectAllBulletinArticleByUserCodeFk(userCodeFk);
+		ResponseEntity<List<ResponseSelectAllArticleByUserCodeFk>> response1 = articleController.selectAllBulletinArticleByUserCodeFk(userCodeFk1);
+		ResponseEntity<List<ResponseSelectAllArticleByUserCodeFk>> response2 = articleController.selectAllBulletinArticleByUserCodeFk(userCodeFk2);
 
 		// then
-		Assertions.assertThat(HttpStatus.OK).isEqualTo(response.getStatusCode());
+		Assertions.assertThat(HttpStatus.OK).isEqualTo(response1.getStatusCode());
+		Assertions.assertThat(HttpStatus.NOT_FOUND).isEqualTo(response2.getStatusCode());
 	}
 
 	@Test
@@ -83,10 +100,14 @@ class ArticleControllerTests {
 			.build();
 
 		// when
-		ResponseEntity<ResponseRegistFreeBoardArticle> response = articleController.registBulletinArticle(request);
+		ArticleDTO requestArticleDTO = articleService.registFreeBoardArticle(modelMapper.map(request, ArticleDTO.class));
+		System.out.println("Expected: " + requestArticleDTO);
+
+		ArticleDTO responseArticleDTO = modelMapper.map(articleRepository.findAll().get(articleRepository.findAll().size() - 1), ArticleDTO.class);
+		System.out.println("Actual: " + responseArticleDTO);
 
 		// then
-		Assertions.assertThat(HttpStatus.CREATED).isEqualTo(response.getStatusCode());
+		Assertions.assertThat(requestArticleDTO.toString()).isEqualTo(responseArticleDTO.toString());
 	}
 
 	@Test
@@ -102,10 +123,14 @@ class ArticleControllerTests {
 			.build();
 
 		// when
-		ResponseEntity<ResponseModifyFreeBoardArticle> response = articleController.modifyBulletinArticle(request);
+		ArticleDTO requestArticleDTO = articleService.modifyFreeBoardArticle(modelMapper.map(request, ArticleDTO.class));
+		System.out.println("Expected: " + requestArticleDTO);
+
+		ArticleDTO responseArticleDTO = modelMapper.map(articleRepository.findById(request.getArticleCodePk()), ArticleDTO.class);
+		System.out.println("Actual: " + responseArticleDTO);
 
 		// then
-		Assertions.assertThat(HttpStatus.OK).isEqualTo(response.getStatusCode());
+		Assertions.assertThat(requestArticleDTO.toString()).isEqualTo(responseArticleDTO.toString());
 	}
 
 	@Test
