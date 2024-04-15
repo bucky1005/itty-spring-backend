@@ -17,6 +17,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.test.web.servlet.MockMvc;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -27,13 +28,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 public class LoginControllerTests {
 
 	@Autowired
-	private MockMvc mockMvc;
-
-	@MockBean
-	private UserRepository userRepository;
-
-	@MockBean
-	private LoginService loginService;
+	private LoginController loginController;
 
 	@Test
 	@DisplayName("회원 가입 성공 테스트")
@@ -46,15 +41,8 @@ public class LoginControllerTests {
 		requestRegist.setUserNickname("nickName");
 		requestRegist.setUserPhoneNumber("123456789");
 
-		UserDTO userDTO = new UserDTO();
-		userDTO.setUserEmail(requestRegist.getUserEmail());
-		userDTO.setUserPassword(requestRegist.getUserPassword());
-		userDTO.setUserName(requestRegist.getUserName());
-		userDTO.setUserNickname(requestRegist.getUserNickname());
-		userDTO.setUserPhoneNumber(requestRegist.getUserPhoneNumber());
-
 		// When
-		ResponseRegist result = loginService.registUser(userDTO);
+		HttpStatusCode result = loginController.registUser(requestRegist).getStatusCode();
 
 		// Then
 		Assertions.assertThat(HttpStatus.CREATED).isEqualTo(result);
